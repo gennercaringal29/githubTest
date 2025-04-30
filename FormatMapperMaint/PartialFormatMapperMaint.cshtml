@@ -1,0 +1,102 @@
+﻿@model IList<VREMIT.ModelMVC.Tieup_Codes>
+@using DARS.Web.Business
+@using VREMIT.Auth
+
+@{
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+    var hasAdd = AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_CREATE);
+    var hasEdit = AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_MODIFY);
+    var hasDelete = AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_DELETE);
+    var hasEditOrDelete = hasEdit || hasDelete;
+    var isMaker = hasAdd || hasEdit || hasDelete;
+}
+
+<div class="row" align="right">
+    <div class="col-md-12">
+        @if (AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_CREATE))
+        {
+            <input type="button"
+                   id="addnew"
+                   class="btn"
+                   style="background-color: #e60000; color: white;"
+                   value="Add New"
+                   onclick="location.href = '@Url.Action("AddNew", "FormatMapperMaint")';" />
+        }
+        @if (isMaker)
+        {
+            <input type="button"
+                   id="requestHist"
+                   class="btn btn-primary btn-md"
+                   value="Request History"
+                   onclick="location.href = '@Url.Action("RequestHistory", "FormatMapperMaint")';" />
+        }
+
+        <input type="button"
+               class="btn btn-primary btn-md"
+               value="Pending Approval"
+               onclick="location.href = '@Url.Action("FormatMapperMaintPending", "FormatMapperMaint")';" />
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="table-responsive">
+        <table id="tieuplist" class="table table-striped table-bordered compact" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Tie-Up</th>
+                    <th>File Type</th>
+                    <th>Start Record</th>
+                    <th>Status</th>
+                    <th id="action_th" style="width: 10px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var status = "";
+                    if (item.status == "0")
+                    {
+                        status = "Approved";
+                    }
+                    <tr>
+                        <td>@item.tieup_codes</td>
+                        <td>@item.file_type</td>
+                        <td>@item.start_record</td>
+                        <td>@status</td>
+                        <td style="text-align: center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm btn-block mt-1 ms-1 me-1"
+                                    style="width: 100px"
+                                    onclick="location.href = '@Url.Action("Detail", "FormatMapperMaint", new { i = item.pk_tieup_code_id })';">
+                                View
+                            </button>
+                            @if (hasEdit)
+                            {
+                                <button type="button"
+                                        class="btn btn-primary btn-sm btn-block mt-1 ms-1 me-1 btnEdit"
+                                        style="width: 100px"
+                                        data-pk="@item.pk_tieup_code_id">
+                                    Edit
+                                </button>
+                            }
+                            @if (hasDelete)
+                            {
+                                <button type="button"
+                                        class="btn btn-primary btn-sm btn-block mt-1 ms-1 me-1 btnDelete"
+                                        style="width: 100px"
+                                        data-pk="@item.pk_tieup_code_id">
+                                    Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+

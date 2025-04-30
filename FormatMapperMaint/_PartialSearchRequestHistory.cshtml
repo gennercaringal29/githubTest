@@ -1,0 +1,111 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+<!-- SEARCH BAR -->
+<div class="card border-black">
+    <div class="card-header text-white bg-danger">Search</div>
+    <div class="card-body text-dark">
+        <div class="row">
+
+            <div class="row" id="gfilter">
+                <div class="col-md-3">
+                    <label class="search-width"></label>
+                    <input type="text" class="form-control mb-3" id="global_filter" placeholder="Search any fields">
+                </div>
+                <!-- Expand Button -->
+                <div class="col-md-1">
+                    <label class="search-width"></label>
+                    <input type='button' class="btn btn-outline-danger " id="expand" onclick="expandSearch();" value=" + ">
+                </div>
+                <!-- End Expand Button -->
+            </div>
+
+            <div class="row col-md-12 mb-3" id="expandItem" align="center" hidden>
+
+                <div class="col-md-3" id="filter_col0" data-column="0">
+                    <label class="search-width">Tie-Up</label>
+                    <input type="text" class="column_filter form-control search-width" id="col0_filter">
+                </div>
+
+                <div class="col-md-3" id="filter_col1" data-column="1">
+                    <label class="search-width">File Type</label>
+                    @Html.DropDownListFor(m => m.TieupViewMaintInputs.file_type, new SelectList(ViewBag.formViewModel,
+                    "file_type", "file_type"), "-Select-", new { @class = "column_filter form-select search-width", @id = "col1_filter" })
+                </div>
+
+                <div class="col-md-3" id="filter_col2" data-column="2">
+                    <label class="search-width">Start Record</label>
+                    <input type="text" class="column_filter form-control search-width" id="col2_filter">
+                </div>
+
+                <div class="col-md-3" id="filter_col4" data-column="3">
+                    <label class="search-width">Action Made</label>
+                    <select class="column_filter form-select search-width" id="col3_filter">
+                        <option value=""> -ALL- </option>
+                        <option value="Add New">Add New</option>
+                        <option value="Amendment">Amendment</option>
+                        <option value="Deletion">Deletion</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row col-md-12" id="expandItem2" align="center" hidden>
+
+                <div class="col-md-3" id="filter_col5" data-column="4">
+                    <label class="search-width">Maker Remarks</label>
+                    <input type="text" class="column_filter form-control search-width" id="col4_filter">
+                </div>
+
+                <div class="col-md-3" id="filter_col6" data-column="5">
+                    <label class="search-width">Date and Time Requested</label>
+                    <input type="date" class="column_filter form-control search-width" id="col5_filter">
+                </div>
+
+                <div class="col-md-3" id="filter_col7" data-column="6" style="margin-bottom: 10px;">
+                    <label class="search-width">Date and Time Disposition</label>
+                    <input type="date" class="column_filter form-control search-width" id="col6_filter">
+                </div>
+
+                <div class="col-md-3" id="filter_col8" data-column="7">
+                    <label class="search-width">Approver</label>
+                    <input type="text" class="column_filter form-control search-width" id="col7_filter">
+                </div>
+
+            </div>
+
+            <div class="row col-md-12 mb-3" id="expandItem3" align="center" hidden>
+
+                <div class="col-md-3" id="filter_col9" data-column="8">
+                    <label class="search-width">Disposition Made</label>
+                    <select class="column_filter form-select search-width" id="col8_filter">
+                        <option value=""> -ALL- </option>
+                        <option value="Approve"> Approve </option>
+                        <option value="Reject"> Reject </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3" id="filter_col10" data-column="9">
+                    <label class="search-width">Approver Remarks</label>
+                    <input type="text" class="column_filter form-control search-width" id="col9_filter">
+                </div>
+
+                <div class="col-md-auto" style="text-align:center">
+                    <label class="search-width">&nbsp;</label>
+                    <input type='button' class="btn btn-outline-danger" id="shrink" onclick="shrinkSearch();" value=" - ">
+                </div>
+
+            </div>
+
+            <!-- Search Button -->
+            <div class="form-group row col-md-12" id="searchBtn" align="center" hidden>
+                <div class="col-md-12 col-lg-12">
+                    <br>
+                    <input type='button' class="btn btn-primary" id="search" onclick="multiSearch();" value="Search">
+                    <input type='button' class="btn btn-primary" id="clearBtn" onclick="clearText();" value="Clear">
+                </div>
+            </div>
+            <!-- End Search Button -->
+
+        </div>
+    </div>
+</div>
+<!-- END SEARCH BAR -->

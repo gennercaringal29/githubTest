@@ -1,0 +1,1357 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business;
+@using VREMIT.Auth
+
+@{
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+
+    IList<VREMIT.ModelMVC.Tieup> TieupCodeMot = ViewBag.TieupCodeMot;
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+
+}
+
+@section css
+{
+    <style>
+        .search-width {
+            width: 100% !important;
+            margin: 0 1rem;
+        }
+
+        select {
+            text-align-last: center;
+        }
+
+        #fieldNameTable.dataTable tbody tr:hover {
+            color: floralwhite;
+            background-color: #e60000;
+        }
+
+        #fieldNameTable.dataTable tbody tr.selected {
+            color: floralwhite;
+            background-color: #e60000;
+        }
+
+        .hide-button {
+            background-color: red !important;
+            color: white !important;
+        }
+
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f9f9f9; /* Light gray */
+        }
+
+        .table-striped tbody tr:nth-child(even) {
+            background-color: #ffffff; /* White */
+        }
+
+        .text-danger {
+            position: absolute; /* Removes space when hidden */
+            visibility: hidden; /* Hides the message but keeps it in place */
+        }
+
+            .text-danger:empty {
+                display: none; /* If there's no message, remove it completely */
+            }
+
+            .text-danger:not(:empty) {
+                visibility: visible; /* Show only when there's an actual message */
+                position: relative; /* Restore normal position when needed */
+            }
+
+        tr {
+            padding: 0;
+        }
+
+        .count-field, .col-md-15 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        td {
+            padding: 0;
+            vertical-align: middle !important;
+        }
+
+        .count-field, .col-md-15 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .provided {
+            transform: scale(1.2); /* Slightly increase the checkbox size */
+            margin: 0; /* Remove extra spacing */
+        }
+
+        .table-header {
+            background-color: red !important; /* Force red background */
+            color: white !important; /* Force white text */
+            text-align: center; /* Center text horizontally */
+            vertical-align: middle; /* Center text vertically */
+            padding: 10px; /* Adds padding for better spacing */
+            border: 1px solid white; /* Optional: Add white border for clarity */
+        }
+    </style>
+
+}
+
+@if (status != null)
+{
+    <div class="row" id="error_div">
+        <div class="col-md-12">
+            @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+                {
+                    Status = status,
+                    SuccessMessage = success,
+                    ErrorMessage = error
+                });}
+        </div>
+    </div>
+}
+
+<div class="card">
+
+    @using (Html.BeginForm("MaintEditFormatMapper", "FormatMapperMaint", FormMethod.Post, new { id = "EditForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.TieupViewMaintInputs.Action, new { id = "actionHiddenField" })
+
+        @Html.HiddenFor(m => m.TieupViewDetailInputs.Provided, new { @id = "jsonDataField" })
+        @Html.HiddenFor(m => m.TieupViewDetailInputs.settlementCurrencyHolder, new { @id = "settlementCurHolder" })
+
+        <div class="form-body">
+            <div class="card-body"></div>
+
+            <div class="container-fluid" id="detail_div">
+
+                <div class="card border-black">
+
+                    <h5 class="card-header text-white bg-danger">Edit</h5>
+
+                    <div class="card-body">
+
+                        <div class="form-body">
+
+                            <div class="row">
+                                <div class="container-fluid">
+                                    <div class="card-body">
+                                        <div class="card-body mb-3 container">
+                                            <div class="row mb-3 align-items-center">
+                                                <label class="col-md-2 col-form-label">Tie-Up <span style="color:red;">*</span> </label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBoxFor(m => m.TieupViewMaintInputs.tieup_codes, new
+                                                {
+                                                    @class = "column_filter form-control col-md-3",
+                                               @id = "tieup_codes",
+                                                    @readonly = "readonly",
+                                                    @style = ""
+                                                })
+                                                </div>
+                                            </div>
+
+                                            <div id="selected" class="row mb-3 align-items-center">
+                                                <label class="col-md-2 col-form-label">File Type <span style="color:red;">*</span></label>
+                                                <div class="col-md-3">
+                                                    @Html.DropDownListFor(m => m.TieupViewMaintInputs.file_type, new SelectList(Model.TieupCodesFileTypes1,
+                                                        "file_type", "file_type", @Model.TieupViewMaintInputs.file_type), "-Select-",
+                                                        new { @class = "column_filter form-select col-md-3 selected1", @id = "file_type", @style = "display:none;" })
+
+                                                    <select class="column_filter form-select col-md-3 selected" onchange="updateDropdownValue(this.value)" id="fileTypeSelect" name="file_type" data-val="true">
+                                                        <option>- Select -</option>
+                                                        @{
+                                                            string[] file_type = new string[] { "xlxs", "csv", "txt", "others" };
+                                                            foreach (string fileType in file_type)
+                                                            {
+                                                                <option @(Model.TieupViewMaintInputs.file_type == fileType ? "selected='selected'" : "")>@fileType</option>
+                                                            }
+                                                        }
+                                                    </select>
+
+                                                    @Html.ValidationMessageFor(m => m.TieupViewMaintInputs.file_type, "", new { @class = "text-danger col-md-5" })
+                                                </div>
+                                            </div>
+
+                                            <div id="delimiterDiv" class="row mb-4">
+                                                <div class="col-md-12 d-flex align-items-center">
+                                                    <label class="col-md-2 col-form-label me-1">Delimiter Type<span style="color:red;">*</span></label>
+                                                    @{
+                                                        if (ViewBag.req == "View" && @Model.TieupViewMaintInputs.status != 1)
+                                                        {
+                                                            <div class="me-2">
+                                                                @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter_type, new { @class = "form-control", @id = "delimiter_type", @readonly = "readonly" })
+                                                            </div>
+                                                            <div class="me-2">
+                                                                @Html.LabelFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "form-label", @id = "dLimitLabel" })
+                                                            </div>
+                                                            <div class="me-2">
+                                                                @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "form-control delimitType", @id = "delimiter", @readonly = "readonly" })
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="me-2">
+                                                                @Html.DropDownListFor(
+                                                                    m => m.TieupViewDetailInputs.delimiter_type,
+                                                                    new SelectList(Model.TieupCodesFileTypes, "delimiterType", "delimiterType"),
+                                                                    "-Select-",
+                                                                    new { @class = "form-select selectDelimitt", @id = "delimiter_type", @style = "display: block; width: 260px" }
+                                                                )
+                                                            </div>
+                                                            @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter_type, "", new { @class = "text-danger", @id = "delimiterTypeValidation" })
+                                                            <div class="me-2">
+                                                                <select class="form-select selectDelimit" id="delimiterTypeSelect" name="delimit" data-val="false">
+                                                                    <option selected>- Select -</option>
+                                                                    @{
+                                                                        string[] delimit = new string[] { "Delimiter", "Fixed Length" };
+                                                                        foreach (string delimiter in delimit)
+                                                                        {
+                                                                            <option @(Model.TieupViewDetailInputs.delimiter_type == delimiter ? "selected='selected'" : "")>@delimiter</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                            <div class="me-2">
+                                                                @Html.LabelFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "form-label delimitLabel", @id = "dLimitLabel" })
+                                                                <span style="color:red;" id="dLimitLabelreq">*</span>
+                                                            </div>
+                                                            <div class="me-2">
+                                                                @Html.DropDownListFor(
+                                                                    m => m.TieupViewDetailInputs.delimiter,
+                                                                    new SelectList(Model.TieupCodesFileTypes2, "delimiters", "delimiters"),
+                                                                    "-Selected-",
+                                                                    new { @class = "form-select selectDelimiterss", @id = "delimiter", @style = "display:none; width: 200px" }
+                                                                )
+                                                            </div>
+                                                            <div class="me-3">
+                                                                <select class="form-select selectDelimiters" style="width: 200px" id="delimiterTypeSelect1" name="delimiters" onchange="updateDropdownValue2(this.value)" data-val="false">
+                                                                    <option value="">-Select-</option>
+                                                                    @{
+                                                                        string[] delimiters = new string[] { "Tab", "Semicolon", "Comma", "Space", "Other" };
+                                                                        foreach (string delimiter in delimiters)
+                                                                        {
+                                                                            <option @(Model.TieupViewDetailInputs.delimiter == delimiter ? "selected='selected'" : "")>@delimiter</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                            <span class="text-danger" id="delimiterTypeSelect1-error"></span>
+                                                            @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter, "", new { @class = "text-danger", @id = "delimiterMessage" })
+                                                            <div class="me-2">
+                                                                @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter_val, new { @class = "form-control", @id = "delimiter_val", @style = "width: 100px" })
+                                                            </div>
+                                                            <div>
+
+                                                                @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter_val, "", new { @class = "text-danger", @id = "valDelimiter" })
+
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+
+
+                                            <!--Fieldname Validation-->
+                                            <div class="checkbox-container" style="margin-left:190px">
+                                                <input type="checkbox" id="myCheckbox2" style="margin-right: 10px">
+                                                @Html.TextBoxFor(m => m.TieupViewMaintInputs.filenameV, new { @class = "form-control col-md-2", @id = "filenameV", @style = "display:none;" })
+                                                <label for="myCheckbox">Filename Validation</label>
+                                            </div>
+
+                                            <!--Footer Validation-->
+                                            <div id="myCheckbox1" class="checkbox-container" style="margin-left: 190px; display:none">
+                                                <input type="checkbox" id="myCheckbox3" style="margin-right: 10px">
+                                                @Html.TextBoxFor(m => m.TieupViewMaintInputs.footerV, new { @class = "form-control col-md-2", @id = "footerV", @style = "display:none;" })
+                                                <label for="myCheckbox1">Footer Validation</label>
+                                            </div>
+
+                                            <br />
+                                            <div class="card-body">
+
+                                                @Html.Partial("PartialViewEditFormatMapper", Model)
+
+                                            </div>
+                                            <div class="row" align="center">
+                                                <div class="col-md-12 form-actions">
+                                                    <input type="button"
+                                                           id="update"
+                                                           class="btn btn-primary"
+                                                           value="Update"
+                                                           onclick="Update('Save', '@Model.TieupViewMaintInputs.tieup_code_id', '@Model.TieupViewMaintInputs.status')">
+                                                    <a href="#" class="btn btn-primary"
+                                                       onclick="location.href='@Url.Action("Index", "FormatMapperMaint")'">Cancel</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+@section Scripts
+{
+
+    <script>
+       var mappermaint = '@Url.Action("Index", "FormatMapperMaint")'; //change
+        var deletecountry = '@Url.Action("MaintDeleteCountry", "FormatMapperMaint")'; // change
+        var editcountry = '@Url.Action("MaintUpdateFormatMapper", "FormatMapperMaint")'; //change
+
+        var viewpending_ = '@Url.Action("FormatMapperMaintPending", "FormatMapperMaint")';
+        var approve_ = '@Url.Action("Approve", "FormatMapperMaint")';
+
+        $(document).ready(function () {
+
+            $('#tieuplist').DataTable({ //change
+                language: {
+                    searchPlaceholder: "Search any fields"
+                },
+                "info": false,
+                "sDom": '<"top"l>rt<"hidden"f><"bottom"ip><"clear">',
+                "language": {
+                    "searchPlaceholder": "Search any fields",
+                    "emptyTable": "No data found"
+                }
+            });
+
+            $('#fieldNameTable').DataTable({
+                dom: '<"top"ilf>rt<"bottom"lp><"clear">',
+                language: {
+                    searchPlaceholder: "Search any fields"
+                },
+                select: {
+                    style: 'multi', // Enable multiple row selection
+                    selector: 'td:first-child' // Allow selection when clicking the first column
+                },
+                lengthChange: false, // Disable the "Show entries" dropdown
+                paging: false, // Disable pagination
+                ordering: false,
+            });
+
+
+            if ("@ViewBag.stext" != "") {
+                swal({
+                    title: "@ViewBag.stitle",
+                    text: "@ViewBag.stext",
+                    icon: "@ViewBag.sicon"
+                })
+            }
+
+            if ("@Model.TieupViewMaintInputs.status" == "Pending for Approval") {
+                $('#FormatMapperMaintViewInputs_remarks').val('');
+            }
+
+            $(".myTableDetail tr > *:nth-child(4)").show();
+
+        });
+
+        // Get input values safely and trim any extra spaces
+        const d_fundCurrency_start_column = document.getElementById('d_fundCurrency_start_column')?.value.trim() || "";
+        const d_fundCurrency_length = document.getElementById('d_fundCurrency_length')?.value.trim() || "";
+        const funding_currency = document.getElementById('funding_currency')?.value.trim() || "";
+
+        const d_fundAmount_start_column = document.getElementById('d_fundAmount_start_column')?.value.trim() || "";
+        const d_fundAmount_length = document.getElementById('d_fundAmount_length')?.value.trim() || "";
+        const fundingAmount = document.getElementById('fundingAmount')?.value.trim() || "";
+
+        const d_settlementCurrency_start_column = document.getElementById('d_settlementCurrency_start_column')?.value.trim() || "";
+        const d_settlementCurrency_length = document.getElementById('d_settlementCurrency_length')?.value.trim() || "";
+        const settlement_currency = document.getElementById('settlement_currency')?.value.trim() || "";
+
+        const d_settlementAmount_start_column = document.getElementById('d_settlementAmount_start_column')?.value.trim() || "";
+        const d_settlementAmount_length = document.getElementById('d_settlementAmount_length')?.value.trim() || "";
+        const settlementAmount = document.getElementById('settlementAmount')?.value.trim() || "";
+
+        const delimiterType = document.getElementById('delimiterType')?.value.trim() || "";
+
+        // Get checkboxes and check if they are checked
+        const fundingCheckboxes = document.getElementsByClassName('funding_checkbox');
+        let isFundingChecked = Array.from(fundingCheckboxes).some(cb => cb.checked);
+
+        const settlementCheckboxes = document.getElementsByClassName('settlement_checkbox');
+        let isSettlementChecked = Array.from(settlementCheckboxes).some(cb => cb.checked);
+
+
+        Array.from(fundingCheckboxes).forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    // If one checkbox is checked, check all checkboxes in the class
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = true);
+                    $('#d_fundCurrency_start_column').prop("disabled", true).val("");
+                    $('#d_fundCurrency_length').prop("disabled", true).val("");
+                    $('#funding_currency').prop("disabled", false).val("");
+                    $("#d_fundCurrency_start_column").next(".text-danger").text("");
+                    $("#d_fundCurrency_length").next(".text-danger").text("");
+
+                    $('#d_fundAmount_start_column').prop("disabled", true).val("");
+                    $('#d_fundAmount_length').prop("disabled", true).val("");
+                    $('#fundingAmount').prop("disabled", false).val("");
+                    $("#d_fundAmount_start_column").next(".text-danger").text("");
+                    $("#d_fundAmount_length").next(".text-danger").text("");
+
+                    //uncheked alternatively settlement
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_settlementCurrency_start_column').prop("disabled", false);
+                    $('#d_settlementCurrency_length').prop("disabled", false);
+                    $('#settlement_currency').prop("disabled", true).val("");
+                    $("#settlement_currency").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", false);
+                    $('#d_settlementAmount_length').prop("disabled", false);
+                    $('#settlementAmount').prop("disabled", true).val("");
+                    $("#settlementAmount").next(".text-danger").text("");
+                } else {
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_fundCurrency_start_column').prop("disabled", false).val("");
+                    $('#d_fundCurrency_length').prop("disabled", false).val("");
+                    $('#funding_currency').prop("disabled", true).val("");
+                    $("#funding_currency").next(".text-danger").text("");
+
+                    $('#d_fundAmount_start_column').prop("disabled", false);
+                    $('#d_fundAmount_length').prop("disabled", false);
+                    $('#fundingAmount').prop("disabled", true).val("");
+                    $("#fundingAmount").next(".text-danger").text("");
+                }
+            });
+        });
+
+        Array.from(settlementCheckboxes).forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    // If one checkbox is checked, check all checkboxes in the class
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = true);
+                    $('#d_settlementCurrency_start_column').prop("disabled", true).val("");
+                    $('#d_settlementCurrency_length').prop("disabled", true).val("");
+                    $('#settlement_currency').prop("disabled", false).val("");
+                    $("#d_settlementCurrency_start_column").next(".text-danger").text("");
+                    $("#d_settlementCurrency_length").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", true).val("");
+                    $('#d_settlementAmount_length').prop("disabled", true).val("");
+                    $('#settlementAmount').prop("disabled", false).val("");
+                    $("#d_settlementAmount_start_column").next(".text-danger").text("");
+                    $("#d_settlementAmount_length").next(".text-danger").text("");
+
+                    //uncheked alternatively funding
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_fundCurrency_start_column').prop("disabled", false);
+                    $('#d_fundCurrency_length').prop("disabled", false);
+                    $('#funding_currency').prop("disabled", true).val("");
+                    $("#funding_currency").next(".text-danger").text("");
+
+                    $('#d_fundAmount_start_column').prop("disabled", false);
+                    $('#d_fundAmount_length').prop("disabled", false);
+                    $('#fundingAmount').prop("disabled", true).val("");
+                    $("#fundingAmount").next(".text-danger").text("");
+                } else {
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_settlementCurrency_start_column').prop("disabled", false).val("");
+                    $('#d_settlementCurrency_length').prop("disabled", false).val("");
+                    $('#settlement_currency').prop("disabled", true).val("");
+                    $("#settlement_currency").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", false);
+                    $('#d_settlementAmount_length').prop("disabled", false);
+                    $('#settlementAmount').prop("disabled", true).val("");
+                    $("#settlementAmount").next(".text-danger").text("");
+                }
+            });
+        });
+
+
+        //For Default Value
+        function collectDataAndUpdateJson() {
+            var dataDict = {};
+
+            $(".defaultDataValue").each(function (index) {
+                var key = $(this).find("td:first").text().trim(); // Get first <td> text
+                var cleanKey = key.replace(/\*/g, "").trim(); // Remove '*' and extra spaces
+                var isChecked = $(this).find("input[type='checkbox']").prop("checked"); // Get checkbox state
+
+                if (cleanKey.length > 0) {
+                    dataDict[cleanKey] = isChecked;
+                }
+            });
+
+            console.log("Updated JSON Data:", JSON.stringify(dataDict)); // Debugging
+            $("#jsonDataField").val(JSON.stringify(dataDict)); // Update hidden input field
+        }
+
+        $(document).ready(function () {
+            // Retrieve JSON data from hidden field
+            var jsonData = $("#jsonDataField").val();
+
+            console.log("Parsing JSON data:", jsonData);
+
+            if (jsonData) {
+                try {
+                    var parsedData = JSON.parse(jsonData); // Convert JSON string to object
+
+                    $(".defaultDataValue").each(function () {
+                        var key = $(this).find("td:first").text().trim(); // Get first column (field name)
+                        var checkbox = $(this).find("input[type='checkbox']"); // Find checkbox in the row
+                        var startColumnField = $(this).find("td:nth-child(2) input"); // Start column field
+                        var lengthField = $(this).find("td:nth-child(3) input"); // Length field
+                        var defaultField = $(this).find("td:nth-child(4)").find("input[type='text']"); // Default field
+                       
+                        if (parsedData.hasOwnProperty(key)) {
+                            var isChecked = parsedData[key];
+                            checkbox.prop("checked", isChecked); // Set checkbox checked/unchecked
+
+                            // Enable/disable fields based on checkbox state
+                            startColumnField.prop("disabled", isChecked);
+                            lengthField.prop("disabled", isChecked);
+                            defaultField.prop("disabled", !isChecked);
+
+                            if (isChecked) {
+                                // Remove error messages and clear values
+                                defaultField.closest("td").find(".text-danger").text("");
+                                startColumnField.closest("td").find(".text-danger").text("");
+                                lengthField.closest("td").find(".text-danger").text("");
+                                startColumnField.val("");
+                                lengthField.val("");
+                                //defaultField.val("");
+                            }
+                        }
+                    });
+
+                    // Handle checkbox change event
+                    $(".defaultDataValue input[type='checkbox']").change(function () {
+                        collectDataAndUpdateJson(); // Recollect all data on change
+
+                        var row = $(this).closest("tr");
+                        var startColumnField = row.find("td:nth-child(2) input");
+                        var lengthField = row.find("td:nth-child(3) input");
+                        var defaultField = row.find("td:nth-child(4)").find("input[type='text'], select");
+
+                        if ($(this).is(":checked")) {
+                            
+                            // Disable startColumn and lengthField, enable defaultField
+                            startColumnField.prop("disabled", true).val("");
+                            lengthField.prop("disabled", true).val("");
+                            defaultField.prop("disabled", false);
+
+                            // Remove error messages
+                            row.find(".text-danger").text("");
+
+                            // Reset all defaultField values correctly
+                            defaultField.each(function () {
+                                if ($(this).is("select")) {
+                                    $(this).prop("selectedIndex", 0); // Reset dropdown to first option
+                                } else if ($(this).is("input[type='text']")) {
+                                    $(this).val(""); // Clear text input field
+                                }
+                            });
+
+                        } else {
+                            // Enable startColumn and lengthField, disable defaultField
+                            startColumnField.prop("disabled", false);
+                            lengthField.prop("disabled", false);
+                            defaultField.prop("disabled", true).val("");
+
+                            // Remove error messages
+                            row.find(".text-danger").text("");
+
+                            // Disable dropdown and reset only if it's not already empty
+                        }
+                    });
+
+
+                } catch (e) {
+                    console.error("Error parsing JSON data:", e);
+                }
+            }
+           
+            $("#settlement_currency").change(function () {
+                var selectedValue = $(this).val(); // Get selected value
+                if (selectedValue === "Funding Currency") {
+                    selectedValue = "FunCur";
+                }
+               
+            });
+
+            var $settlementCurrency = $("#settlement_currency");
+            
+            // On page load: Check if value is empty, then disable
+            if ($settlementCurrency.val() === "") {
+                $settlementCurrency.prop("disabled", true);
+            }
+
+            $(".settlementPovided").change(function () {
+                var dropdown = $("#settlement_currency");
+
+                if ($(this).is(":checked")) {
+                    dropdown.val(""); // Clear the 
+                } 
+            });
+           
+            // Collect initial data on page load
+            collectDataAndUpdateJson();
+        });
+
+        $(document).ready(function () {
+            // On page load: Check if value is empty, then disable
+            var fundingCurrency = $('#funding_currency');
+            console.log("fundingCurrency value: " + fundingCurrency.val());
+
+            if (fundingCurrency.val() !== "") {
+                fundingCurrency.prop("disabled", false);
+            } else {
+                fundingCurrency.prop("disabled", true);
+            }
+
+            // On checkbox change: clear the dropdown
+            $(".fundingPovided").change(function () {
+                var dropdownFund = $("#funding_currency");
+
+                if ($(this).is(":checked")) {
+                    dropdownFund.val(""); // Clear the value
+                }
+            });
+        });
+       
+        //Default Value Condition Checkbox
+        $(document).ready(function () {
+            
+            // Sorts all diabled checkbox at the bottom
+            var tableBody = $("myTableDetail tbody");
+            if (tableBody.length === 0) {
+                tableBody = $("table");
+            }
+
+            // Get all rows and sort them
+            var rows = $("table tr").get();
+
+            rows.sort(function (a, b) {
+                var aNotReq = $(a).find("td:nth-child(5) input[type='checkbox']").hasClass("provided_notReq");
+                var bNotReq = $(b).find("td:nth-child(5) input[type='checkbox']").hasClass("provided_notReq");
+
+                return aNotReq - bNotReq; // Moves "notReq" checkboxes to the bottom
+            });
+
+            $.each(rows, function (index, row) {
+                tableBody.append(row);
+            });
+
+            //Adding asterisks sa mga required fields
+            $("td:nth-child(5) input[type='checkbox'].provided").each(function () {
+                var row = $(this).closest("tr");
+                var firstColumn = row.find("td:nth-child(1)"); // Target the first column
+
+                if (!$(this).prop("disabled")) {
+                    firstColumn.append(" <span class='required' style='color:red;'>*</span>");
+                }
+            });
+        });
+
+
+
+        $(document).ready(function () {
+            var checkbox2 = document.getElementById('myCheckbox2');
+            var checkbox3 = document.getElementById('myCheckbox3');
+
+            $('#myCheckbox2').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#filenameV').val("On");
+                } else {
+                    $('#filenameV').val("Off");
+                }
+
+                console.log(checkboxValue);
+            });
+
+            $('#myCheckbox3').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#footerV').val("On");
+                } else {
+                    $('#footerV').val("Off");
+                }
+
+                console.log(checkboxValue);
+            });
+
+            if ("@Model.TieupViewMaintInputs.filenameV" == "On") {
+                checkbox2.checked = true;
+            } else {
+                checkbox2.checked = false;
+            }
+
+            if ("@Model.TieupViewMaintInputs.footerV" == "On") {
+                checkbox3.checked = true;
+            } else {
+                checkbox3.checked = false;
+            }
+        });
+
+       
+
+        $(document).ready(function () {
+
+            var delimiterSelect = document.getElementById("delimiterTypeSelect");
+            var delimiterSelect1 = document.getElementById("delimiterTypeSelect1");
+            var validationMessage = document.getElementById("delimiterMessage");
+            var valDelimiter = document.getElementById("valDelimiter");
+
+            $("#delimiterTypeSelect").on("change", function () {
+                console.log("entered onchange function");
+                var delimiterVal = $("#delimiterTypeSelect").val();                
+                console.log("Delimiter val: " + delimiterVal);
+                if (delimiterVal == "- Select -") {
+                    $("#fileTypeSelect").next(".text-danger").text("File Type is required.");
+                    return false;
+                } else {
+                    $("#fileTypeSelect").next(".text-danger").text("");
+                }
+
+                if (delimiterVal === "txt" || delimiterVal === "others") {
+                    $('#delimiter_type').css('display', 'block');
+                    $('#delimiterTypeSelect').css('display', 'none');
+                }
+
+            });
+            delimiterSelect.addEventListener("change", function () {
+                if (delimiterSelect.value === "Delimiter") {
+                    document.getElementById('delimiterTypeSelect1').style.display = "block";
+                }
+            });
+
+            delimiterSelect1.addEventListener("change", function () {
+                if (delimiterSelect1 != "") {
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                }
+            });
+
+            $(".selectDelimiters").change(function () {
+
+                if ($(this).val() === "Other") {
+                    document.getElementById('delimiter_val').style.display = "block";
+                } else if ($(this).val() === "") {
+                    validationMessage.innerText = "Delmiter is required";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById('delimiter_val').style.display = "none"; //added fixed --> move postion to here
+                    valDelimiter.innerText = "";
+                } else {
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                    valDelimiter.innerText = "";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                }
+            }).trigger("change");
+
+            $(".selected").change(function () { // this is based on the file type selection
+
+                const prefix = document.getElementById("prefix");
+                const prefixLabel = document.getElementById("prefix_label");
+
+                console.log("Triggered");
+                if ($(this).val() == "csv" ) {
+                    $("tr").each(function () {
+                        var dafaultField = $(this).find("td:nth-child(3) input[type='text']");
+                        dafaultField.val(""); // Clear the value of the input field in the 3rd column
+                    });
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    document.getElementById("delimiter_type").value = "";
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+                    $("#delimiter_type").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter Type is required"
+                        }
+                    });
+                    console.log("2");
+
+                    document.getElementById('delimiterTypeSelect1').style.display = "none";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    $("#delimiterTypeValidation").text("Delimiter Type is required.");
+
+                    //for prefix
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+                }
+                else if ($(this).val() == "txt" || $(this).val() == "others")
+                {
+                    console.log("101");
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                    valDelimiter.innerText = "";
+                    document.getElementById('delimiterDiv').style.display = "block";
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    $("#delimiterTypeSelect").next(".text-danger").text("");
+                    console.log("enetreeee");
+                  /*  $("#delimiterTypeValidation").text("");*/
+                }
+                else
+                {
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    document.getElementById("delimiter_type").value = "";
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+
+                    document.getElementById('myCheckbox1').style.display = "none";
+                    var checkbox3 = document.getElementById('myCheckbox3');
+                    checkbox3.checked = false;
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+
+                    $("#delimiter_type").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter Type is required"
+                        }
+                    });
+
+                    console.log("1");
+                    //added fixed
+                    document.getElementById('delimiterTypeSelect1').style.display = "none";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    $("#delimiterTypeValidation").text("Delimiter Type is required.");
+
+                    $("tr").each(function () {
+                        var dafaultField = $(this).find("td:nth-child(3) input[type='text']");
+                        dafaultField.val(""); // Clear the value of the input field in the 3rd column
+                    });
+
+                    //for prefix
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+                }
+            }).trigger("change");
+
+
+            //Additional condition for dropdown filetype
+            $(".selected1").change(function () {
+
+                const prefix = document.getElementById("prefix");
+                const prefixLabel = document.getElementById("prefix_label");
+
+                if ($(this).val() == "csv") {
+                    var elements = document.querySelectorAll('[id$="_length"]');
+                    elements.forEach(function (element) {
+                        element.value = '';
+                    });
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    document.getElementById("delimiter_type").value = "";
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+
+                    $("#delimiter_type").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter Type is required"
+                        }
+                    });
+
+                    $('#delimiter_type').css('display', 'block'); //added
+                    $('#delimiterTypeSelect').css('display', 'none'); //added
+
+                    //for prefix
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+                }
+                else if ($(this).val() == "txt" || $(this).val() == "others") {
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                    valDelimiter.innerText = "";
+                    document.getElementById('delimiterDiv').style.display = "block";
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    //document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    //document.getElementById('delimiter_val').style.display = "block";
+
+                    if (($(this).val() == "txt" || $(this).val() == "others")) {
+                        document.getElementById('delimiterTypeSelect1').style.display = "none";
+                        document.getElementById('delimiter_val').style.display = "none";
+                    }
+                    $('#delimiter_type').css('display', 'block');
+                    $('#delimiterTypeSelect').css('display', 'none');
+                }
+                else {
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    /*document.getElementById("delimiter_type").value = "";*/
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+
+                    document.getElementById('myCheckbox1').style.display = "none";
+                    var checkbox3 = document.getElementById('myCheckbox3');
+                    checkbox3.checked = false;
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+
+                    $("#delimiter_type").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter Type is required"
+                        }
+                    });
+
+                    //for prefix
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+                }
+            }).trigger("change");
+
+            //Additional condition for dropdown delimiter type (hidden in UI for User Action) //On Load page also
+            $(".selectDelimitt").change(function (e) {
+                var delimiterVal = $("#delimiter_type").val();
+
+                const prefix = document.getElementById("prefix");
+                const prefixLabel = document.getElementById("prefix_label");
+
+                if (delimiterVal === "txt" || delimiterVal === "others") {
+                    $('#delimiter_type').css('display', 'block');
+                    $('#delimiterTypeSelect').css('display', 'none');
+                    $('#dLimitLabel').addClass('hidden'); //added fixed
+                    $('#dLimitLabelreq').addClass('hidden');
+                }
+
+
+                //THIS IS FOR DELIMITER TYPE
+                if ($(this).val() == "Delimiter") { 
+                    document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    $("tr").each(function () {
+                        var dafaultField = $(this).find("td:nth-child(3) input[type='text']");
+                        dafaultField.val(""); // Clear the value of the input field in the 3rd column
+                    });
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+
+                    $('#delimiterTypeSelect1').removeClass('hidden');
+                    $('#dLimitLabel').removeClass('hidden');
+                    $('#dLimitLabelreq').removeClass('hidden');
+
+                    if (delimiterSelect1.value === "Other") {
+                        document.getElementById('delimiter_val').style.display = "block";
+                    } else if (delimiterSelect1.value === "Semicolon" || delimiterSelect1.value === "Comma" ||
+                        delimiterSelect1.value === "Space" || delimiterSelect1.value === "Tab") {
+                        document.getElementById('delimiter_val').style.display = "none";
+                    }
+
+                    validationMessage.innerText = "Delmiter is required"; //added fixed
+
+                    $("#delimiter").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter is required"
+                        }
+                    });
+
+                    document.getElementById("myTableDetail1").style.width = "100%";
+                    $("#delimiterTypeValidation").text("");
+                    e.preventDefault();
+
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+
+                    return false;
+                } else if ($(this).val() == "Fixed Length") {
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");//added fixed
+                    $('#delimiter').addClass('hidden');
+                    $('#delimiterTypeSelect1').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+                    document.getElementById("delimiterTypeSelect1").value = "";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                    valDelimiter.innerText = "";
+                    $("#delimiter").rules("remove", "required");
+                    $(".myTableDetail tr > *:nth-child(3)").show();
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById("myTableDetail1").style.width = "100%";
+                    $("#delimiterTypeValidation").text("");
+
+                    //for prefix
+                    prefix.style.display = "block";
+                    prefixLabel.style.display = "block";
+                    $("#d_pefix").text("");
+                    //$("#app_prefix").val("");
+                } else {
+                    //added fixed
+                    $("#delimiterTypeValidation").text("Delimiter Type is required.");
+                    document.getElementById('delimiterTypeSelect1').style.display = "none";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById("delimiterTypeSelect1").value = "";
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                    valDelimiter.innerText = "";
+                    return false;
+                }
+            }).trigger("change");
+
+            //class triggering (showed in UI)
+            $(".selectDelimit").change(function () {
+
+                const prefix = document.getElementById("prefix");
+                const prefixLabel = document.getElementById("prefix_label");
+
+                if ($(this).val() == "Delimiter") {
+                    document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    var elements = document.querySelectorAll('[id$="_length"]');
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+
+                    elements.forEach(function (element) {
+                        element.value = '';
+                    });
+                    $('#delimiterTypeSelect1').removeClass('hidden');
+                    $('#dLimitLabel').removeClass('hidden');
+                    $('#dLimitLabelreq').removeClass('hidden');
+                    if (delimiterSelect1.value === "Other") {
+                        document.getElementById('delimiter_val').style.display = "block";
+                    } else if (delimiterSelect1.value === "Semicolon" || delimiterSelect1.value === "Comma" ||
+                        delimiterSelect1.value === "Space" || delimiterSelect1.value === "Tab") {
+                        document.getElementById('delimiter_val').style.display = "none";
+                    }
+
+                    $("#delimiter").rules("add", {
+                        required: true,
+                        messages: {
+                            required: "Delimiter is required"
+                        }
+                    });
+
+                    document.getElementById("myTableDetail1").style.width = "100%";
+                    
+                } else if ($(this).val() == "Fixed Length") {                   
+                    $('#delimiter').addClass('hidden');
+                    $('#delimiterTypeSelect1').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $('#dLimitLabelreq').addClass('hidden');
+                    document.getElementById("delimiterTypeSelect1").value = "";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                    valDelimiter.innerText = "";
+                    validationMessage.innerText = ""; $("#delimiterTypeSelect1-error").text("");
+                    $("#delimiter").rules("remove", "required");
+                    $(".myTableDetail tr > *:nth-child(3)").show();
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById("myTableDetail1").style.width = "100%";
+
+                     //for prefix
+                    prefix.style.display = "block";
+                    prefixLabel.style.display = "block";
+                    $("#d_pefix").text("");
+                    //$("#app_prefix").val("");
+                }
+            }).trigger("change");
+
+        });
+
+
+        //No Changes Were Made
+        $(document).ready(function () {
+            // Store original values for all form controls on page load
+            $('.form-control, .provided, .provided_notReq, .funding_checkbox, .settlement_checkbox, .filenameV, #myCheckbox2, #myCheckbox3, #SetCurChkbox, .selected1, #fileTypeSelect, #delimiter_type, #delimiterTypeSelect, #delimiter, #delimiterTypeSelect1, #funding_currency, #settlement_currency')
+                .not('#remarks')
+                .each(function () {
+                    if ($(this).is(':checkbox')) {
+                        $(this).data('original-value', $(this).prop('checked')); // Store checkbox checked state
+                    } else {
+                        $(this).data('original-value', $(this).val() || ""); // Store text input value
+                    }
+            });
+
+            // Use event delegation to handle dynamically added elements
+            $(document).on("change", ".form-control:not(#remarks), .provided, .provided_notReq, .funding_checkbox, .settlement_checkbox, .filenameV, #myCheckbox2, #myCheckbox3, #SetCurChkbox, .selected1, #fileTypeSelect, #delimiter_type, #delimiterTypeSelect, #delimiter, #delimiterTypeSelect1, #funding_currency, #settlement_currency", function () {
+                var originalValue = $(this).data('original-value');
+
+                if ($(this).is(':checkbox')) {
+                    var currentValue = $(this).prop('checked'); // Check if checkbox is checked or not
+                } else {
+                    var currentValue = $(this).val();
+                }
+
+                if (currentValue === originalValue) {
+                    $('#actionHiddenField').val(0);
+                    console.log("Sample no changes");
+                } else {
+                    $('#actionHiddenField').val(2);
+                    console.log("Sample with changes");
+                }
+            });
+
+        });
+
+        //para mag-get ng value sa kabilang dropdown when execute
+        function updateDropdownValue(selectedValue) {
+            $('#file_type').val(selectedValue);
+            if (selectedValue == "- Select -") {
+                $("#fileTypeSelect").next(".text-danger").text("File Type is required.");
+                return false;
+            } else {
+                $("#fileTypeSelect").next(".text-danger").text("");
+            }
+
+            if (selectedValue === "txt" || selectedValue === "others") {
+                $('#delimiter_type').css('display', 'block');
+                $('#delimiterTypeSelect').css('display', 'none');
+            }
+        }
+
+        $(document).ready(function () {
+            var selectedFileType = $('#fileTypeSelect').val();
+            updateDropdownValue(selectedFileType);
+        });
+
+
+        function updateDropdownValue2(selectedValue) {
+            $('#delimiter').val(selectedValue);
+
+            if ($("#delimiter").val() === "") {
+            } else {
+                $("#delimiterMessage").text("");
+            }
+        }
+
+        $(document).ready(function () {
+            var selectedDelimiterType = $('#delimiterTypeSelect1').val();
+            updateDropdownValue2(selectedDelimiterType);
+        });
+
+        function confirmClick(req, id, status, permission = "") {
+            $.ajax({
+                type: 'POST',
+                url: deletecountry, // change
+                data: { "req": req, "pk_id": id, "stat": status, "permission": permission },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.href = mappermaint; //change
+                }
+            });
+        }
+
+        function Update(req, id, status) {
+            var delimiterTypeValue = $("#delimiter_type").val();
+            var delimiterValue = $("#delimiter").val();
+            var filetype = $("#fileTypeSelect").val();
+
+        if ((delimiterValue === "" && delimiterTypeValue === "Delimiter") || filetype === "- Select -") {
+                if ($("#delimiterMessage").text("") == "" || $("#delimiterTypeSelect1-error").text("")) {
+                    $("#delimiterTypeSelect1-error").text("Delimiter is required");
+                } else {
+                    validationMessage.innerText = "";
+                }
+                return false;
+            } else {
+                if (req == "Save") {
+                    title = "Are you sure?";
+                    text = "Make sure your information is correct.";
+                    icon = "warning";
+            }            
+
+            $("#delimiterTypeSelect1-error").text("");     
+            
+            if ($("#EditForm").valid()) {
+
+                $("form").submit(function (e) {
+                    e.preventDefault();
+                });
+
+                const d_fundCurrency_start_column = document.getElementById('d_fundCurrency_start_column')?.value.trim() || "";
+                const d_fundCurrency_length = document.getElementById('d_fundCurrency_length')?.value.trim() || "";
+                //const funding_currency = document.getElementById('funding_currency')?.value.trim() || "";
+
+                const d_fundAmount_start_column = document.getElementById('d_fundAmount_start_column')?.value.trim() || "";
+                const d_fundAmount_length = document.getElementById('d_fundAmount_length')?.value.trim() || "";
+                //const fundingAmount = document.getElementById('fundingAmount')?.value.trim() || "";
+
+                const d_settlementCurrency_start_column = document.getElementById('d_settlementCurrency_start_column')?.value.trim() || "";
+                const d_settlementCurrency_length = document.getElementById('d_settlementCurrency_length')?.value.trim() || "";
+                //const settlement_currency = document.getElementById('settlement_currency')?.value.trim() || "";
+
+                const d_settlementAmount_start_column = document.getElementById('d_settlementAmount_start_column')?.value.trim() || "";
+                const d_settlementAmount_length = document.getElementById('d_settlementAmount_length')?.value.trim() || "";
+                //const settlementAmount = document.getElementById('settlementAmount')?.value.trim() || "";
+
+                const delimiterType = document.getElementById('delimiterType')?.value.trim() || "";
+
+                // Get checkboxes and check if they are checked
+                const fundingCheckboxes = document.getElementsByClassName('funding_checkbox');
+                let isFundingChecked = Array.from(fundingCheckboxes).some(cb => cb.checked);
+
+                const settlementCheckboxes = document.getElementsByClassName('settlement_checkbox');
+                let isSettlementChecked = Array.from(settlementCheckboxes).some(cb => cb.checked);
+
+                // Check conditions and show alert if needed
+                if (
+                    // Case 1: Both Funding & Settlement fields are empty AND checkboxes are unchecked
+                    (!isFundingChecked && !isSettlementChecked &&
+                        d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                    // Case 2: Only one funding field is filled, but not both, AND funding checkbox is unchecked
+                    (!isFundingChecked && d_fundCurrency_start_column !== "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                    (!isFundingChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column !== "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                    // Case 3: Only one settlement field is filled, but not both, AND settlement checkbox is unchecked
+                    (!isSettlementChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column !== "" && d_settlementAmount_start_column === "") ||
+
+                    (!isSettlementChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column !== "") ||
+
+                    // Case 4: One funding field and one settlement field are filled (not a valid pair) AND checkboxes are unchecked
+                    (!isFundingChecked && !isSettlementChecked &&
+                        (d_fundCurrency_start_column === "" || d_fundAmount_start_column === "") &&
+                        (d_settlementCurrency_start_column === "" || d_settlementAmount_start_column === "") &&
+                        (d_fundCurrency_start_column !== "" || d_fundAmount_start_column !== "") &&
+                        (d_settlementCurrency_start_column !== "" || d_settlementAmount_start_column !== ""))
+                ) {
+                    alertMessage();
+                    return false; // Stop execution
+
+                } else if (
+                    // Case 1: Both Funding & Settlement fields are empty AND checkboxes are unchecked
+                    (!isFundingChecked && delimiterType === "Fixed Length" && !isSettlementChecked &&
+                        d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                        d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                        d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                    // Case 2: Only one funding field is filled, but not both, AND funding checkbox is unchecked
+                    (!isFundingChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column !== "" && d_fundAmount_start_column === "" &&
+                        d_fundCurrency_length !== "" && d_fundAmount_length === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                        d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                    (!isFundingChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column !== "" &&
+                        d_fundAmount_length !== "" && d_fundCurrency_length === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                        d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                    // Case 3: Only one settlement field is filled, but not both, AND settlement checkbox is unchecked
+                    (!isSettlementChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column !== "" && d_settlementAmount_start_column === "" &&
+                        d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                        d_settlementCurrency_length !== "" && d_settlementAmount_length === "") ||
+
+                    (!isSettlementChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                        d_settlementCurrency_start_column === "" && d_settlementAmount_start_column !== "" &&
+                        d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                        d_settlementCurrency_length === "" && d_settlementAmount_length !== "") ||
+
+                    // Case 4: One funding field and one settlement field are filled (not a valid pair) AND checkboxes are unchecked
+                    (!isFundingChecked && !isSettlementChecked && delimiterType === "Fixed Length" &&
+                        (d_fundCurrency_start_column === "" || d_fundAmount_start_column === "") &&
+                        (d_settlementCurrency_start_column === "" || d_settlementAmount_start_column === "") &&
+                        (d_fundCurrency_start_column !== "" || d_fundAmount_start_column !== "") &&
+                        (d_settlementCurrency_start_column !== "" || d_settlementAmount_start_column !== "") &&
+                        (d_fundCurrency_length === "" || d_fundAmount_length === "") &&
+                        (d_settlementCurrency_length === "" || d_settlementAmount_length === ""))
+                ) {
+                    alertMessage();
+                    return false; // Stop execution
+                }
+
+                    swal({
+                        title: title,
+                        text: text,
+                        icon: icon,
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((willCrud) => {
+                        if (willCrud) {
+                            var form = $("#EditForm").serialize() + '&req=' + req + '&id=' + id + '&status=' + status;
+                            $.ajax({
+                                type: 'POST',
+                                url: editcountry,
+                                data: form,
+                                dataType: 'json',
+                                success: function (data) {
+                                    var title = data.title;
+                                    var text = data.text;
+                                    var icon = data.icon;
+                                    if (icon == "error") {
+                                        swal({
+                                            title: title,
+                                            text: text,
+                                            icon: icon,
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "Amendment",
+                                            text: "Amendment request has been successfully submitted for approval",
+                                            icon: "success",
+                                        }).then(() => {
+                                            window.location.href = mappermaint;
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        function alertMessage() {
+            swal({
+                title: "Alert!",
+                text: "Configure at least one pair—(1) Settlement Amount & Currency or (2) Funding Amount & Currency. Both are allowed if necessary",
+                icon: "warning"
+            });
+        }
+
+    </script>
+
+
+}

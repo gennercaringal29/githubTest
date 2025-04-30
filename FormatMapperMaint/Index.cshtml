@@ -1,0 +1,76 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business
+@using VREMIT.Auth
+
+@{
+    IList<VREMIT.ModelMVC.Tieup_Codes> tieupCode = ViewBag.TieupMot;
+
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+}
+
+@section css
+{
+    <style>
+
+        .search-width {
+            width: 100% !important;
+            margin: 0 1rem;
+        }
+
+        select {
+            text-align-last: center;
+        }
+    </style>
+}
+
+
+@if (status != null)
+{
+    <div class="row" id="error_div">
+        <div class="col-md-12">
+            @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+                {
+                    Status = status,
+                    SuccessMessage = success,
+                    ErrorMessage = error
+                });}
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-content">
+        <br />
+        <div class="ms-3 me-3">
+            @Html.Partial("_PartialBlurbsView")
+        </div>
+
+        @using (Html.BeginForm("Index", "FormatMapperMaint", FormMethod.Post, new { id = "tieupForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="card-body">
+
+                @Html.Partial("_PartialSearch")
+
+                @Html.Partial("PartialFormatMapperMaint", tieupCode)
+
+                @Html.Partial("_PartialRemarksModal")
+
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts
+{
+    @Html.Partial("_PartialScript")
+}

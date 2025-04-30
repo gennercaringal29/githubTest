@@ -1,0 +1,79 @@
+﻿@using DARS.Web.Business
+
+@{
+    IList<VREMIT.ModelMVC.vwRequestHistFormatMapper> requestHist = ViewBag.RequestHist;
+}
+
+<div class="form-group">
+
+    <div class="row">
+        <div class="table-responsive">
+            <table id="datatablelist" class="table table-striped table-bordered" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th>Tie-Up</th>
+                        <th>File Type</th>
+                        <th>Start Record</th>
+                        <th>Action Made</th>
+                        <th>Maker Remarks</th>
+                        <th>Date and Time Requested</th>
+                        <th>Date and Time Disposition</th>
+                        <th>Approver</th>
+                        <th>Disposition Made</th>
+                        <th>Approver Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in requestHist)
+                    {
+                        <tr>
+                            <td>@item.tieup_codes</td>
+                            <td>@item.file_type</td>
+                            <td>@item.start_record</td>
+                            <td>@Html.RequestTypeHistory(item.action_made)</td>
+                            <td>@item.maker_remarks</td>
+                            <td>
+                                @item.datetime_requested
+                                <label hidden>@item.datetime_requested.ToString("yyyy-MM-dd")</label>
+                            </td>
+
+                            @if (item.datetime_disposition == DateTime.MinValue || item.datetime_disposition == null)
+                            {
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @item.datetime_disposition
+                                    @*<b>Date: </b> @item.datetime_disposition.ToString("MM/dd/yyyy")
+                <br />
+                <b>Time: </b> @item.datetime_disposition.ToString("h:mm:tt")*@
+                                    <label hidden>@item.datetime_disposition.ToString("yyyy-MM-dd")</label>
+                                </td>
+                            }
+
+                            <td>@item.approver</td>
+                            <td>@Html.RequestStatusHistory(item.disposition_made)</td>
+                            <td>@item.approver_remarks</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div class="row" align="center">
+        <div class="col-md-12 col-lg-12">
+            <a href="#" class="btn btn-primary"
+               onclick="location.href='@Url.Action("Index", "FormatMapperMaint")'">Back</a>
+        </div>
+    </div>
+
+</div>
+
+
+
+

@@ -1,0 +1,1121 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business;
+@using VREMIT.Auth
+
+@{
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+
+    IList<VREMIT.ModelMVC.Tieup> TieupCode = ViewBag.TieupCode;
+    IList<VREMIT.ModelMVC.Tieup_Mot> TieupCodeMot = ViewBag.TieupCodeMot;
+
+}
+
+@{
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+}
+
+
+@section css
+{
+    <style>
+
+        #fieldNameTable.dataTable tbody tr:hover {
+            color: floralwhite;
+            background-color: #e60000;
+        }
+
+        #fieldNameTable.dataTable tbody tr.selected {
+            color: floralwhite;
+            background-color: #e60000;
+        }
+    </style>
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+            {
+                Status = status,
+                SuccessMessage = success,
+                ErrorMessage = error
+            });}
+    </div>
+</div>
+
+<div class="card">
+
+    @using (Html.BeginForm("MaintEditFormatMapper", "FormatMapperMaint", FormMethod.Post, new { id = "tieupForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <!-- FOR TESTING PURPOSES ONLY -->
+        <input type="hidden" id="permission" name="permission" value="@ViewBag.permission">
+        <!-- END -->
+
+        <h5 class="card-header">@ViewBag.Title</h5>
+        <div class="card-body">
+            <div class="card">
+                <h5 class="card-header">List</h5>
+                <div class="card-body">
+                    <div class="row" align="right">
+                        <div class="col-md-12">
+                            @if (AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_CREATE))
+                            {
+                                <input type="button"
+                                       id="addnew"
+                                       class="btn"
+                                       style="background-color: #e60000; color: white;"
+                                       value="Add New"
+                                       onclick="location.href = '@Url.Action("addNew", "FormatMapperMaint", new { req = "New" })';" />
+                            }
+                            @if (AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_APPROVE))
+                            {
+                                <input type="button"
+                                       class="btn btn-primary btn-md"
+                                       value="Pending Approval"
+                                       onclick="location.href = '@Url.Action("FormatMapperMaintPending", "FormatMapperMaint")';" />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Partial("PartialFormatMapperMaint", Model.TieupCodesMaintParam)
+                    </div>
+                </div>
+            </div>
+
+            <hr style="width:90%; margin:auto; color:black; background-color:black;" />
+            <br>
+            <!-- If approver is login hide this div then show when View is clicked then readonly all fields except "Remarks" -->
+            <div class="container-fluid" id="tieupdet">
+                <div class="card">
+                    <h5 class="card-header"> </h5> <!--status-->
+                    <div class="form-group">
+                        <div class="form-inline">
+                            <h6 class="card-header col-2">Tie-up</h6>
+                            @Html.TextBoxFor(m => m.TieupViewMaintInputs.tieup_codes, new
+                            {
+                                @class = "column_filter form-control col-md-3",
+                           @id = "tieup_codes",
+                                @readonly = "readonly",
+                                @style = "display:none;"
+                            })
+                            @foreach (var tieup in TieupCodeMot)
+                            {
+                                if (tieup.tieup_code == @Model.TieupViewMaintInputs.tieup_codes) //convert the value
+                                {
+                                    @Html.TextBoxFor(m => tieup.tieup_code, new { @class = "column_filter form-control col-md-3", @readonly = "readonly" })
+                                }
+                            }
+
+                        </div>
+
+                        <div id="selected">
+                            <div class="form-inline">
+                                <h6 class="card-header col-2">File Type</h6>
+
+                                @Html.DropDownListFor(m => m.TieupViewMaintInputs.file_type, new SelectList(Model.TieupCodesFileTypes1,
+                           "file_type", "file_type", @Model.TieupViewMaintInputs.file_type), "-Select-",
+                            new { @class = "column_filter form-control col-md-3 ", @id = "file_type", @style = "display:none;" })
+
+                                <select class="form-control col-md-3 selected" onchange="updateDropdownValue(this.value)"
+                                        id="fileTypeSelect" name="file_type" data-val="false">
+                                    <option>- Select -</option>
+                                    @{
+                                        string[] file_type = new string[] { "xlxs",
+                                                                                "csv",
+                                                                                "txt",
+                                                                                "others"
+                                                                                        };
+                                        foreach (string fileType in file_type)
+                                        {
+                                            <option @(Model.TieupViewMaintInputs.file_type == fileType ? "selected='selected'" : "")>@fileType</option>
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="delimiterDiv">
+                            <div class="form-inline">
+                                <h6 class="card-header col-2">Delimiter Type</h6>
+                                @{
+                                    if (ViewBag.req == "View" && @Model.TieupViewMaintInputs.status != 1)
+                                    {
+                                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter_type, new { @class = "column_filter form-control col-md-3", @id = "delimiter_type", @readonly = "readonly" })
+                                        @Html.LabelFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "card-header col-md-1", @id = "dLimitLabel" })
+                                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "form-control col-md-2 delimitType", @id = "delimiter", @readonly = "readonly" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.TieupViewDetailInputs.delimiter_type, new SelectList(Model.TieupCodesFileTypes,
+                                    "delimiterType", "delimiterType"), "-Select-",
+                                     new { @class = "column_filter form-control col-md-3 selectDelimitt", @id = "delimiter_type", @style = "display:none;" })
+
+                                        <select class="form-control col-md-3 selectDelimit " onchange="updateDropdownValue1(this.value)"
+                                                id="delimiterTypeSelect" name="delimit" data-val="false">
+                                            <option value="" selected disabled hidden>- Select -</option>
+                                            @{
+                                                string[] delimit = new string[] { "Delimiter",
+                                                                            "Fixed Length"
+                                                                                    };
+                                                foreach (string delimiter in delimit)
+                                                {
+                                                    <option @(Model.TieupViewDetailInputs.delimiter_type == delimiter ? "selected='selected'" : "")>@delimiter</option>
+                                                }
+                                            }
+                                        </select>
+
+                                        @Html.LabelFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "col-md-1 delimitLabel", @id = "dLimitLabel" })
+                                        //@Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter, new { @class = "form-control col-md-2 unable", @id = "delimiter" })
+                                        @Html.DropDownListFor(m => m.TieupViewDetailInputs.delimiter, new SelectList(Model.TieupCodesFileTypes2,
+                                      "delimiters", "delimiters"), "-Select-",
+                                       new { @class = "column_filter form-control col-md-2 selectDelimiterss", @id = "delimiter", @style = "display:none;" })
+
+                                        <select class="form-control col-md-2 selectDelimiters" onchange="updateDropdownValue2(this.value)"
+                                                id="delimiterTypeSelect1" name="delimiters" data-val="false">
+                                            <option value="">-Select-</option>
+                                            @{
+                                                string[] delimiters = new string[] { "Tab",
+                                                                            "Semicolon",
+                                                                            "Comma",
+                                                                            "Space",
+                                                                            "Other"
+                                                                                    };
+                                                foreach (string delimiter in delimiters)
+                                                {
+                                                    <option @(Model.TieupViewDetailInputs.delimiter == delimiter ? "selected='selected'" : "")>@delimiter</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.delimiter_val, new { @class = "form-control col-md-1", @id = "delimiter_val", @style = "margin-left:20px" });
+                                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter, "", new { @class = "text-danger offset-md-6", @id = "delimiterValidationMessage" })
+                                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter_val, "", new { @class = "text-danger", @id = "valDelimiter", style = "margin-left:200px" })
+                                    }
+                                }
+
+                            </div>
+                            <div>
+                                @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.delimiter_type, "", new { @class = "text-danger offset-md-2" })
+                            </div>
+                        </div>
+
+                        <!--Fieldname Validation-->
+                        <div class="checkbox-container" style="margin-left:150px">
+                            <input type="checkbox" id="myCheckbox2" style="margin-right: 10px">
+                            @Html.TextBoxFor(m => m.TieupViewMaintInputs.filenameV, new { @class = "form-control col-md-2", @id = "filenameV", @style = "display:none;" })
+                            <label for="myCheckbox">Filename Validation</label>
+                        </div>
+
+                        <!--Footer Validation-->
+                        <div id="myCheckbox1" class="checkbox-container" style="margin-left: 150px; display:none">
+                            <input type="checkbox" id="myCheckbox3" style="margin-right: 10px">
+                            @Html.TextBoxFor(m => m.TieupViewMaintInputs.footerV, new { @class = "form-control col-md-2", @id = "footerV", @style = "display:none;" })
+                            <label for="myCheckbox1">Footer Validation</label>
+                        </div>
+
+                        @* For Header Navbar Menu *@
+                        <div class="card-body">
+                            <div class="alert-red">
+                                <ul class="nav nav-pills mb-1" id="pills-tab" role="tablist">
+                                    <li class="nav-item menu">
+                                        <a class="nav-link active menu-btn" id="pills-profile-tab" data-toggle="pill" style="border-radius: 0rem; color:#000; background-color:#ffffff"
+                                           href="#detail" role="tab" aria-controls="pills-profile" aria-selected="true">Detail</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @if (ViewBag.req == "Edit")
+                            {
+                                <div class="row">
+                                    <div class="" style="width: 600px; height: 300px; overflow: auto; margin-left: 270px; border: 2px solid #D3D3D3;">
+                                        <div class="table-responsive">
+                                            <table id="fieldNameTable" class="fieldNameTable" style="width: 100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>File Fields</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="">
+                                                    @foreach (var item in Model.Formatmapper_Fieldname_Details)
+                                                    {
+                                                        <tr style="border-collapse:collapse">
+                                                            <td class="fieldName_button" style="border: none; width: 20px; height: 20px;">@item.field_name</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <br />
+                                <div class="row" align="center">
+                                    <div class="col-md-12">
+                                        <input type="button" id="saveClose" value="Add" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                                <br />
+                                <br />
+                            }
+
+                            @{
+                                if (ViewBag.req == "View" && @Model.TieupViewMaintInputs.status != 1)
+                                {
+                                    @Html.Partial("PartialViewFormatMapper", Model)
+                                }
+                                else if (ViewBag.req == "Edit")
+                                {
+                                    @Html.Partial("PartialViewEditFormatMapper", Model)
+                                }
+                            }
+                            <div class="row" align="center">
+                                <div class="col-md-12">
+                                    <input type="submit"
+                                           id="update"
+                                           class="btn btn-primary"
+                                           value="Save"
+                                           onclick="crudCountry('Save', '@Model.TieupViewMaintInputs.tieup_code_id', '@Model.TieupViewMaintInputs.status')">
+                                    <input type="reset" id="clearBtn" value="Reset" class="btn btn-primary" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+
+    <script>
+       var mappermaint = '@Url.Action("Index", "FormatMapperMaint")'; //change
+        var deletecountry = '@Url.Action("MaintDelete", "FormatMapperMaint")'; // change
+        var editcountry = '@Url.Action("MaintUpdateFormatMapper", "FormatMapperMaint")'; //change
+
+        var viewpending_ = '@Url.Action("FormatMapperMaintPending", "FormatMapperMaint")';
+        var approve_ = '@Url.Action("Approve", "FormatMapperMaint")';
+
+        var tieupdet = !!document.getElementById("tieupdet"); //change
+
+        $(document).ready(function () {
+
+            if (tieupdet == true) {
+                document.getElementById('tieupdet').scrollIntoView(); //change
+            }
+
+            $('#tieuplist').DataTable({ //change
+                language: {
+                    searchPlaceholder: "Search any fields"
+                },
+                "info": false,
+            });
+
+            $('#fieldNameTable').DataTable({
+                dom: '<"top"ilf>rt<"bottom"lp><"clear">',
+                language: {
+                    searchPlaceholder: "Search any fields"
+                },
+                select: {
+                    style: 'multi', // Enable multiple row selection
+                    selector: 'td:first-child' // Allow selection when clicking the first column
+                },
+                lengthChange: false, // Disable the "Show entries" dropdown
+                paging: false, // Disable pagination
+                ordering: false,
+            });
+
+
+            if ("@ViewBag.stext" != "") {
+                swal({
+                    title: "@ViewBag.stitle",
+                    text: "@ViewBag.stext",
+                    icon: "@ViewBag.sicon"
+                })
+            }
+
+            if ("@Model.TieupViewMaintInputs.status" == "Pending for Approval") {
+                $('#FormatMapperMaintViewInputs_remarks').val('');
+            }
+
+            if ("@ViewBag.req" != "") {
+                if ("@ViewBag.req" == "View" || "@ViewBag.status" == "Pending Amendment"
+                    || "@ViewBag.status" == "Pending Approval" || "@ViewBag.status" == "Approved") {
+                    //document.getElementById('delimiterDiv').style.display = "block";//block = show
+
+                    $('#tieup_codes').attr('readonly', true);
+                    $('#file_type').attr('readonly', true);
+                    $('#delimiter_type').attr('readonly', true);
+                    $('#delimiter').attr('readonly', true);
+                    $('#detail_start_record').attr('readonly', true);
+
+                    if ($('#delimiter_type').val() == "Delimiter") {
+                        //$("#myTableDetail").addClass('hidden');
+                        $(".myTableDetail tr > *:nth-child(3)").addClass('hidden');
+                    }
+
+                    if ($('#delimiter_type').val() == "Fixed Length") {
+                        $('#delimiter').addClass('hidden');
+                        $('#dLimitLabel').addClass('hidden');
+                        $("#myTableDetail").removeClass('hidden');
+                    }
+
+                    if ($('#file_type').val() == "csv" || $('#file_type').val() == "xlxs") {
+                        document.getElementById('delimiterDiv').style.display = "none";
+                        $(".myTableDetail tr > *:nth-child(3)").addClass('hidden');
+                    }
+
+                } else if ("@ViewBag.req" == "Edit") {
+                    //document.getElementById('delimiterDiv').style.display = "block";
+                    document.getElementById("file_type").value = "";
+                    //$('#file_type').attr('readonly', false);
+                    $('#delimiter_type').attr('readonly', false);
+                    $('#delimiter').attr('readonly', false);
+                    $('#detail_start_record').attr('readonly', false);
+
+                }
+            }
+
+            // FOR TESTING PURPOSES ONLY / DELETE AFTER TESTING -------------------
+            // 1 = Maker , 2 = Approver
+            if ("@ViewBag.permission" != "") {
+                if ("@ViewBag.permission" == "1") { // Maker
+                    $('#addnew').removeClass('hidden');
+
+                    if ("@ViewBag.req" == "View") { // View
+                        $('#update').addClass('hidden');
+                        $('#approve').addClass('hidden');
+                        $('#reject').addClass('hidden');
+                    } else { // Edit
+                        $('#update').removeClass('hidden');
+                        $('#approve').addClass('hidden');
+                        $('#reject').addClass('hidden');
+                    }
+                } else { // Approver
+                    $('#addnew').addClass('hidden');
+                    $('#update').addClass('hidden');
+
+                    if ("@ViewBag.req" == "View") {
+                        $('#approve').removeClass('hidden');
+                        $('#reject').removeClass('hidden');
+                    } else {
+                        $('#approve').addClass('hidden');
+                        $('#reject').addClass('hidden');
+                    }
+                }
+            }
+            // End ----------------------------------------------------------------
+            $(".myTableDetail tr > *:nth-child(3)").show();
+
+        });
+
+
+        $(document).ready(function () {
+            var checkbox2 = document.getElementById('myCheckbox2');
+            var checkbox3 = document.getElementById('myCheckbox3');
+
+            $('#myCheckbox2').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#filenameV').val("On");
+                } else {
+                    $('#filenameV').val("Off");
+                }
+
+                console.log(checkboxValue);
+            });
+
+            $('#myCheckbox3').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#footerV').val("On");
+                } else {
+                    $('#footerV').val("Off");
+                }
+
+                console.log(checkboxValue);
+            });
+
+            if ("@Model.TieupViewMaintInputs.filenameV" == "On") {
+                checkbox2.checked = true;
+            } else {
+                checkbox2.checked = false;
+            }
+
+            if ("@Model.TieupViewMaintInputs.footerV" == "On") {
+                checkbox3.checked = true;
+            } else {
+                checkbox3.checked = false;
+            }
+        });
+
+        //nag shoshow kung sino lang may data
+        function showRowsFromIndex(startIndex) {
+            var table = document.getElementById('myTableDetail1');
+            var rows = table.getElementsByTagName('tr');
+
+            var rowValues = [];
+
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                var inputField = row.querySelector('.count-field');
+                var value = inputField.value.trim();
+                if (!isNaN(value) && value !== "") {
+                    var parsedValue = parseInt(value);
+                    if (!isNaN(parsedValue)) {
+                        rowValues.push({ row: row, value: parsedValue });
+                    }
+                }
+            }
+
+            rowValues.sort(function (a, b) {
+                return a.value - b.value;
+            });
+
+            for (var j = 1; j < rows.length; j++) {
+                rows[j].style.display = 'none';
+            }
+            for (var k = 0; k < rowValues.length; k++) {
+                var sortedRow = rowValues[k].row;
+                if (k >= startIndex - 1) {
+                    sortedRow.style.display = 'table-row';
+                }
+                table.appendChild(sortedRow);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            showRowsFromIndex(1);
+        });
+
+        //function showRowsFromIndex(startIndex) {
+        //    var table = document.getElementById('myTableDetail1');
+        //    var rows = table.getElementsByTagName('tr');
+
+        //    for (var j = 1; j < rows.length; j++) {
+        //        var row = rows[j];
+        //        var inputField = row.querySelector('.count-field');
+        //        var value = inputField.value.trim();
+
+        //        if (value !== '') {
+        //            row.style.display = 'table-row';
+        //        } else {
+        //            row.style.display = 'none';
+        //        }
+        //    }
+        //}
+
+        //document.addEventListener('DOMContentLoaded', function () {
+        //    showRowsFromIndex(1);
+        //});
+
+
+        //nagdedelete ng record data
+        // Attach event listener to each hide button
+        var hideButtons = document.getElementsByClassName('hide-button');
+        for (var i = 0; i < hideButtons.length; i++) {
+            hideButtons[i].addEventListener('click', function () {
+                var row = this.parentNode.parentNode; // Get the parent row of the clicked button
+                var firstColumnValue = row.cells[0].textContent;
+                //row.style.display = 'none'; // Hide the row by setting its display style to 'none'
+
+                var dataTableRow = $('#fieldNameTable').DataTable();
+                var rowTextsToShow = [];
+                    @foreach (var item in Model.Formatmapper_Fieldname_Details)
+                    {
+                        @:rowTextsToShow.push("@item.field_name"); //to revert back the visibility of fieldnames in the table
+                    }
+
+                for (var i = 0; i < rowTextsToShow.length - 1; i++) {
+                    if (firstColumnValue.trim() == rowTextsToShow[i].trim()) {
+                        dataTableRow.rows(function (idx, data, node) {
+                            return $(node).text().trim() === rowTextsToShow[i].trim();
+                        }).nodes().to$().show();
+                        dataTableRow.rows().deselect();
+                    }
+                }
+
+                //for the settlement currency conditiom
+                var checkbox = document.getElementById('SetCurChkbox');
+                if (firstColumnValue == "Settlement Currency") {
+                    checkbox.disabled = false;
+                    checkbox.checked = true;
+                    settlement_currency.disabled = false;
+                    funCur.disabled = false; //---
+
+                    var dataTable = $('#fieldNameTable').DataTable();
+                    dataTable.rows().deselect();
+                    dataTable.rows(function (idx, data, node) {
+                        return $(node).text().trim() === "Settlement Currency";
+                    }).nodes().to$().show();
+                }
+
+                var inputFieldZ = row.querySelector('.count-field');
+                var inputLengthZ = row.querySelector('.count-field-length');
+                if (inputFieldZ && inputLengthZ) {
+                    row.style.display = 'none';
+
+                    var table = row.parentNode;
+                    var rows = table.getElementsByTagName('tr');
+
+                    // Get the index of the row being removed
+                    var rowIndex = Array.prototype.indexOf.call(rows, row);
+
+                    // Iterate over the rows starting from the removed row index
+                    for (var i = rowIndex; i < rows.length; i++) {
+                        var inputFields = rows[i].getElementsByClassName('count-field');
+                        var inputLengths = rows[i].getElementsByClassName('count-field-length');
+                        for (var j = 0; j < inputFields.length; j++) {
+                            var inputField = inputFields[j];
+                            var currentValue = inputField.value;
+                            // Check if the row is hidden
+                            if (rows[i].style.display === 'none') {
+                                // Empty the value for hidden rows
+                                inputField.value = '';
+                            } else {
+                                // Keep the value unchanged for visible rows
+                                inputField.value = currentValue;
+                            }
+                        }
+                        for (var k = 0; k < inputLengths.length; k++) {
+                            var inputLength = inputLengths[k];
+                            var currentValueL = inputLength.value;
+                            // Check if the row is hidden
+                            if (rows[i].style.display === 'none') {
+                                // Empty the value for hidden rows
+                                inputLength.value = '';
+                            } else {
+                                // Keep the value unchanged for visible rows
+                                inputLength.value = currentValueL;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        var tableBody = document.getElementById('myTableDetail1')
+        function moveRowToLast(row) {
+            tableBody.appendChild(row);
+            var inputField = row.querySelector('.count-field');
+
+            // Calculate the count value based on the current number of rows
+            var rowCount = tableBody.childElementCount;
+             var count = rowCount % 87 + 1;
+
+            // Set the count value in the input field
+            inputField.value = count - 3;
+        }
+
+
+        var draggedRow = null;
+
+        // Register dragstart event listener on draggable rows
+        var draggableRows = document.querySelectorAll('#myTableDetail1 tr[draggable]');
+        draggableRows.forEach(function (row) {
+            row.addEventListener('dragstart', handleDragStart);
+        });
+
+        // Register dragover and drop event listeners on the table
+        var table = document.getElementById('myTableDetail1');
+        table.addEventListener('dragover', handleDragOver);
+        table.addEventListener('drop', handleDrop);
+
+        function handleDragStart(event) {
+            draggedRow = event.target;
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', draggedRow.querySelector('td:first-child').innerText);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+
+        //this code makes the incremental value when drag and drop
+        //function handleDrop(event) {
+        //    event.preventDefault();
+        //    var targetRow = event.target.closest('tr');
+        //    if (targetRow && targetRow !== draggedRow && !targetRow.previousElementSibling.classList.contains('header-row')) {
+        //        var draggedValue = event.dataTransfer.getData('text/plain');
+
+        //        var rect = targetRow.getBoundingClientRect();
+        //        var dropPosition = (event.clientY - rect.top) / rect.height;
+        //        if (dropPosition < 0.5) {
+        //            targetRow.parentNode.insertBefore(draggedRow, targetRow);
+        //        } else {
+        //            targetRow.parentNode.insertBefore(draggedRow, targetRow.nextSibling);
+        //        }
+        //        draggedRow.querySelector('td:first-child').innerText = draggedValue;
+
+        //        // Reset and fill input fields with incrementing values for visible rows
+        //        var visibleRows = Array.from(draggedRow.parentNode.children).filter(function (row) {
+        //            return row.style.display === 'table-row';
+        //        });
+
+        //        var rowCount = visibleRows.length;
+
+        //        visibleRows.forEach(function (row, rowIndex) {
+        //            var inputFields = row.querySelectorAll('.count-field');
+        //            inputFields.forEach(function (input, inputIndex) {
+        //                var position = rowIndex + inputIndex + 1;
+        //                input.value = position;
+        //            });
+        //        });
+        //    }
+        //}
+
+        function handleDrop(event) {
+            event.preventDefault();
+            var targetRow = event.target.closest('tr');
+            if (targetRow && targetRow !== draggedRow && !targetRow.previousElementSibling.classList.contains('header-row')) {
+                var draggedValue = event.dataTransfer.getData('text/plain');
+
+                var rect = targetRow.getBoundingClientRect();
+                var dropPosition = (event.clientY - rect.top) / rect.height;
+                if (dropPosition < 0.5) {
+                    targetRow.parentNode.insertBefore(draggedRow, targetRow);
+                } else {
+                    targetRow.parentNode.insertBefore(draggedRow, targetRow.nextSibling);
+                }
+                draggedRow.querySelector('td:first-child').innerText = draggedValue;
+
+                // Reset and fill input fields with current values for visible rows
+                var visibleRows = Array.from(draggedRow.parentNode.children).filter(function (row) {
+                    return row.style.display === 'table-row';
+                });
+
+                visibleRows.forEach(function (row) {
+                    var inputFields = row.querySelectorAll('.count-field');
+                    inputFields.forEach(function (input) {
+                        var currentValue = input.value;
+                        input.value = currentValue;
+                    });
+                });
+            }
+        }
+
+
+
+        $(document).ready(function () {
+
+            var dataTable0 = document.getElementById('#myTableDetail1');
+            var dataTableRow = $('#fieldNameTable').DataTable();
+            var table00 = document.getElementById("fieldNameTable");
+            var rows = table00.getElementsByTagName("tr");
+            var clickedRowIndex = -1;
+
+
+            //for the condition of the settlement currency to revert back to choices
+            var settlementCurrency = document.getElementById('settlement_currency');
+            settlementCurrency.addEventListener('change', function () {
+                var selectedValue = this.value;
+                if (selectedValue !== '') {
+                    var dataTable = $('#fieldNameTable').DataTable();
+                    dataTable.rows().deselect();
+                    dataTable.rows(function (idx, data, node) {
+                        return $(node).text().trim() === "Settlement Currency";
+                    }).select();
+                    dataTable.rows('.selected').nodes().to$().hide();
+                } else {
+                    var dataTable = $('#fieldNameTable').DataTable();
+                    dataTable.rows().deselect();
+                    dataTable.rows(function (idx, data, node) {
+                        return $(node).text().trim() === "Settlement Currency";
+                    }).nodes().to$().show();
+                }
+
+            });
+
+
+            //for settlement dropdown
+            var checkbox = document.getElementById('SetCurChkbox');
+            var settlement_currency1 = document.getElementById('funCur');
+            var settlement_currency = document.getElementById('settlement_currency');
+
+
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    settlement_currency.disabled = false;
+                    settlement_currency1.disabled = false;
+                    var rowClass = document.getElementsByClassName("rowClass60");
+                    rowClass[0].style.display = 'none';
+                } else {
+                    settlement_currency.disabled = true;
+                    settlement_currency.value = '';
+                    settlement_currency1.disabled = true;
+                    settlement_currency1.value = '';
+
+                    var dataTable = $('#fieldNameTable').DataTable();
+                    dataTable.rows().deselect();
+                    dataTable.rows(function (idx, data, node) {
+                        return $(node).text().trim() === "Settlement Currency";
+                    }).nodes().to$().show();
+                }
+            });
+
+
+             //check for the value of data
+            const settlementCurrencyInput = document.querySelector("#settlement_currency");
+            const settlementCurrencyColumn = document.querySelector("#d_settlementCurrency_start_column");
+            if (settlementCurrencyInput.value !== "") {
+                checkbox.disabled = false;
+                checkbox.checked = true;
+                settlement_currency.disabled = false;
+                settlement_currency1.disabled = false;
+            }
+
+            if (settlementCurrencyColumn.value !== "") {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+                settlement_currency.disabled = true;
+                settlement_currency1.disabled = true;
+            }
+
+
+
+            //---- Refactor(improved)
+            function handleRowClick(rowIndex, rowClass) {
+                return function () {
+                    var clickedRowIndex = rowIndex;
+                    var rowClassNames = document.getElementsByClassName(rowClass);
+
+                    $('#saveClose').on('click', function () {
+                        if (clickedRowIndex !== -1) {
+                            for (var i = 1; i <= 87; i++) {
+                                for (var y = 0; y < rowClassNames.length; y++) {
+                                    if (rowIndex == i) {
+                                        dataTableRow.rows('.selected').nodes().to$().hide();
+                                        moveRowToLast(rowClassNames[y]); //Move the row to the last index when clicked
+                                        rowClassNames[y].style.display = 'table-row';
+                                        if (rowClass == "rowClass60") {
+                                            checkbox.disabled = true;
+                                            checkbox.checked = false;
+                                            settlement_currency.disabled = true;
+                                            settlement_currency1.disabled = true;
+                                            settlement_currency.value = '';
+                                            settlement_currency1.value = '';
+                                        }
+                                        clickedRowIndex = -1;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                };
+            }
+
+            var rowConfigs = [];
+
+            for (var i = 1; i <= 86; i++) {
+                var rowConfig = { rowIndex: i, rowClass: "rowClass" + i };
+                rowConfigs.push(rowConfig);
+            }
+
+            for (var i = 0; i < rowConfigs.length; i++) {
+                var rowConfig = rowConfigs[i];
+                var rowIndex = rowConfig.rowIndex;
+                var rowClass = rowConfig.rowClass;
+
+                rows[rowIndex].addEventListener("click", handleRowClick(rowIndex, rowClass));
+            }
+
+
+
+            var delimiterSelect = document.getElementById("delimiterTypeSelect");
+            var delimiterSelect1 = document.getElementById("delimiterTypeSelect1");
+            var validationMessage = document.getElementById("delimiterValidationMessage");
+            var valDelimiter = document.getElementById("valDelimiter");
+            var delimitertype = document.getElementById("delimiter_type");
+
+            delimiterSelect.addEventListener("change", function () {
+                if (delimiterSelect.value === "Delimiter") {
+                    document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    validationMessage.innerText = "Delmiter is required";
+                } else {
+                    validationMessage.innerText = "";
+                }
+            });
+
+            delimiterSelect1.addEventListener("change", function () {
+                if (delimiterSelect1 != "") {
+                    validationMessage.innerText = "";
+                }
+            });
+
+            $(".selectDelimiters").change(function () {
+                if ($(this).val().trim() === "Other") {
+                    document.getElementById('delimiter_val').style.display = "block";
+                } else if ($(this).val().trim() === "") {
+                    validationMessage.innerText = "Delmiter is required";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                    valDelimiter.innerText = "";
+                } else {
+                    validationMessage.innerText = "";
+                    valDelimiter.innerText = "";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                }
+            }).trigger("change");
+
+            $(".selected").change(function () {
+                if ($(this).val() == "csv" ) {
+                    var elements = document.querySelectorAll('[id$="_length"]');
+                    elements.forEach(function (element) {
+                        element.value = '';
+                    });
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    document.getElementById("delimiter_type").value = "";
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+
+                    $("#delimiter_type").rules("add", "required");
+                }
+                else if ($(this).val() == "txt" || $(this).val() == "others")
+                {
+                    validationMessage.innerText = "";
+                    valDelimiter.innerText = "";
+                    document.getElementById('delimiterDiv').style.display = "block";
+                    document.getElementById('myCheckbox1').style.display = "block";
+
+                    //document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    //document.getElementById('delimiter_val').style.display = "block";
+
+                        if (($(this).val() == "txt" || $(this).val() == "others") && delimitertype.value == "") {
+                            document.getElementById('delimiterTypeSelect1').style.display = "none";
+                            document.getElementById('delimiter_val').style.display = "none";
+                        }
+                }
+                else
+                {
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    document.getElementById("delimiter_type").value = "";
+                    document.getElementById("delimiterTypeSelect").value = "";
+                    document.getElementById("delimiter").value = "";
+                    document.getElementById("delimiter_val").value = "";
+                    document.getElementById('delimiterTypeSelect1').value = "";
+                    document.getElementById('delimiterDiv').style.display = "none";
+
+                    document.getElementById('myCheckbox1').style.display = "none";
+                    var checkbox3 = document.getElementById('myCheckbox3');
+                    checkbox3.checked = false;
+
+                    $('#delimiter').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    $("#delimiter_type").rules("add", "required");
+                }
+            }).trigger("change");
+
+            $(".selectDelimit").change(function () {
+                if ($(this).val() == "Delimiter") {
+                    document.getElementById('delimiterTypeSelect1').style.display = "block";
+                    var elements = document.querySelectorAll('[id$="_length"]');
+
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    //$(".unable").removeAttr("readonly");
+
+                    elements.forEach(function (element) {
+                        element.value = '';
+                    });
+                    $('#delimiterTypeSelect1').removeClass('hidden');
+                    //$('#delimiter').removeClass('hidden');
+                    $('#dLimitLabel').removeClass('hidden');
+
+                    if (delimiterSelect1.value === "Other") {
+                        document.getElementById('delimiter_val').style.display = "block";
+                    } else if (delimiterSelect1.value.trim() === "Semicolon" || delimiterSelect1.value.trim() === "Comma" ||
+                        delimiterSelect1.value.trim() === "Space" || delimiterSelect1.value.trim() === "Tab") {
+                        document.getElementById('delimiter_val').style.display = "none";
+                    }
+
+                    $("#delimiter").rules("add", "required");
+
+                    document.getElementById("myTableDetail1").style.width = "80%";
+                    document.getElementById("myTableDetail2").style.width = "80%";
+
+
+                } else if ($(this).val() == "Fixed Length") {
+                    $('#delimiter').addClass('hidden');
+                    $('#delimiterTypeSelect1').addClass('hidden');
+                    $('#dLimitLabel').addClass('hidden');
+                    document.getElementById("delimiterTypeSelect1").value = "";
+                    document.getElementById('delimiter_val').style.display = "none";
+                    document.getElementById("delimiter_val").value = "";
+                    valDelimiter.innerText = "";
+                    validationMessage.innerText = "";
+                    $("#delimiter").rules("remove", "required");
+                    $(".myTableDetail tr > *:nth-child(3)").show();
+                    document.getElementById("delimiter").value = "";
+                    //$(".unable").attr("readonly", "true");
+                    document.getElementById("myTableDetail1").style.width = "90%";
+                    document.getElementById("myTableDetail2").style.width = "90%";
+
+                }
+            }).trigger("change");
+
+            var $content = $('.menu-content');
+            function showContent(type) {
+                $content.hide().filter('.' + type).show();
+            }
+            var $subContent = $('.menu-subContent');
+            function showSubContent(type) {
+                $subContent.hide().filter('.' + type).show();
+            }
+
+            $('.menu').on('click', '.menu-btn', function (e) {
+                // get the type to pass to showContent by grabbing
+                // the hash from the anchor href and removing the first
+                // character (the #) delimitType
+                showContent(e.currentTarget.hash.slice(1));
+                e.preventDefault();
+            });
+
+            $('.submenu').on('click', '.submenu-btn', function (e) {
+                showSubContent(e.currentTarget.hash.slice(1));
+                e.preventDefault();
+                $(".menus").show();
+            });
+
+             //show 'header' content only on page load
+            showContent('detail');
+            $(".menus").hide();
+            //document.getElementById('delimiterDiv').style.display = "none";
+        });
+
+        //para mag-get ng value sa kabilang dropdown when execute
+        function updateDropdownValue(selectedValue) {
+            $('#file_type').val(selectedValue);
+        }
+
+        $(document).ready(function () {
+            var selectedFileType = $('#fileTypeSelect').val();
+            updateDropdownValue(selectedFileType);
+        });
+
+        function updateDropdownValue1(selectedValue) {
+            $('#delimiter_type').val(selectedValue);
+        }
+
+        $(document).ready(function () {
+            var selectedDelimiterType = $('#delimiterTypeSelect').val();
+            updateDropdownValue1(selectedDelimiterType);
+        });
+
+        function updateDropdownValue2(selectedValue) {
+            $('#delimiter').val(selectedValue);
+        }
+
+        $(document).ready(function () {
+            var selectedDelimiterType = $('#delimiterTypeSelect1').val();
+            updateDropdownValue2(selectedDelimiterType);
+        });
+
+        function updateDropdownFunCur(selectedValue) {
+            $('#funCur').val(selectedValue);
+            if (selectedValue.trim() === 'Funding Currency') {
+                $('#settlement_currency').val('FunCur');
+            } else {
+                $('#settlement_currency').val(selectedValue);
+            }
+        }
+
+        $(document).ready(function () {
+            var selectedFunCur = $('#funCur').val().trim();
+
+            if ("@Model.TieupViewMaintInputs.settlement_currency" === 'FunCur') {
+                updateDropdownFunCur('Funding Currency');
+            } else {
+                updateDropdownFunCur(selectedFunCur);
+            }
+        });
+
+        function deleteRecord(req, id, status, permission = "") {
+            req = req;
+            id = id;
+            status = status;
+            swal({
+                title: "Are you sure?",
+                text: "Are you sure you want to delete this record?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        confirmClick(req, id, status, permission);
+                    }
+                });
+        }
+
+        function confirmClick(req, id, status, permission = "") {
+            $.ajax({
+                type: 'POST',
+                url: deletecountry, // change
+                data: { "req": req, "pk_id": id, "stat": status, "permission": permission },
+                dataType: 'json',
+                success: function (data) {
+                    window.location.href = mappermaint; //change
+                }
+            });
+        }
+
+        function crudCountry(req, id, status) { //change
+            if (req == "Save") {
+                var title = "Are you sure?";
+                var text = "Make sure your informations are correct.";
+                var icon = "warning";
+            }
+
+            if ($("#tieupForm").valid()) { //change
+
+                $("form").submit(function (e) {
+                    e.preventDefault();
+                });
+
+                swal({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willCrud) => {
+                    if (willCrud) {
+                        var form = $("#tieupForm").serialize() + '&req=' + req + '&id=' + id + '&status=' + status; //change
+                        $.ajax({
+                            type: 'POST',
+                            url: editcountry, // change
+                            data: form,
+                            dataType: 'json',
+                            success: function (data) {
+                                window.location.href = mappermaint; //change
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+    </script>
+
+}

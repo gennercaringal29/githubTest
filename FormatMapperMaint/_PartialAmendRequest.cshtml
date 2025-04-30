@@ -1,0 +1,30 @@
+﻿@model IList<DARS.Web.Models.FormatMapperViewAmendment>
+@using DARS.Web.Business
+
+
+<div class="row">
+    <div class="table-responsive">
+        <table id="datatablelist" class="table table-bordered" style="width:100%">
+            <thead style="background-color:red; color:white">
+                <tr>
+                    <th style="background-color:red; color:white">Field Name</th>
+                    <th style="background-color:red; color:white">Current Value (From)</th>
+                    <th style="background-color:red; color:white">New Value (To)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @if (item.currentValue != item.newValue)
+                        {
+                            <td>@item.fieldName</td>
+                            <td>@item.currentValue</td>
+                            <td>@item.newValue</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

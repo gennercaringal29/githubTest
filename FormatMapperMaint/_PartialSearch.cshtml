@@ -1,0 +1,64 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+<!-- SEARCH BAR -->
+<div class="card border-black">
+    <div class="card-header text-white bg-danger">Search</div>
+    <div class="card-body text-dark">
+        <div class="form-group">
+            <div class="row">
+                <div class="form-inline">
+                    <div class="row" id="gfilter">
+                        <div class="col-md-3">
+                            <label class="search-width"></label>
+                            <input type="text" class="form-control" id="global_filter" placeholder="Search any fields">
+                        </div>
+                        <!-- Expand Button -->
+                        <div class="col-md-1">
+                            <label class="search-width"></label>
+                            <input type='button' class="btn btn-outline-danger " id="expand" onclick="expandSearch();" value=" + ">
+                        </div>
+                        <!-- End Expand Button -->
+                    </div>
+
+                    <div class="row col-md-12" id="expandItem" align="center" hidden>
+
+                        <div class="col-md-3" id="filter_col0" data-column="0">
+                            <label class="search-width">Tie-Up</label>
+                            @Html.DropDownListFor(m => m.tieup_codes, new SelectList(ViewBag.TieupCode, "pk_tieup_code", "pk_tieup_code"), "Select Tie-Up",
+                         new { @class = "column_filter form-select search-width", @id = "col0_filter" })
+                        </div>
+
+                        <div class="col-md-3" id="filter_col1" data-column="1">
+                            <label class="search-width">File Type</label>
+                            @Html.DropDownListFor(m => m.file_type, new SelectList(ViewBag.FielType, "file_type", "file_type"), "Select File Type",
+                         new { @class = "column_filter form-select search-width", @id = "col1_filter" })
+                        </div>
+
+                        <div class="col-md-3" id="filter_col2" data-column="2">
+                            <label class="search-width">Start Record</label>
+                            <input type="text" class="column_filter form-control search-width" id="col2_filter">
+                        </div>
+
+                        <div class="col-md-auto">
+                            <label class="search-width">&nbsp;</label>
+                            <input type='button' class="btn btn-outline-danger" id="shrink" onclick="shrinkSearch();" value=" - ">
+                        </div>
+                    </div>
+                   
+                </div>
+
+                <!-- Search Button -->
+                <div id="searchBtn" align="center" hidden>
+                    <div class="col-md-12 col-lg-12">
+                        <br />
+                        <input type='submit' class="btn btn-primary" id="search" onclick="multiSearch();" value="Search">
+                        <input type='submit' class="btn btn-primary" id="clearBtn" onclick="clearTxt();" value="Clear">
+                    </div>
+                </div>
+                <!-- End Search Button -->
+
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@
+<!-- END SEARCH BAR -->

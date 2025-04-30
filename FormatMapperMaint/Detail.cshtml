@@ -1,0 +1,225 @@
+﻿@model DARS.Web.Models.FormatMapperDetailFormViewModel
+
+@using DARS.Web.Business;
+
+@{
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+}
+
+@section css
+{
+
+}
+
+@if (status != null)
+{
+    <div class="row" id="error_div">
+        <div class="col-md-12">
+            @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+                {
+                    Status = status,
+                    SuccessMessage = success,
+                    ErrorMessage = error
+                });}
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-content">
+
+        @using (Html.BeginForm("Detail", "FormatMapperMaint", FormMethod.Post, new { @class = "form form-horizontal", @id = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="card-body">
+
+                @*@Html.HiddenFor(m => m.Action)*@
+                @Html.HiddenFor(m => m.DetailTieupId)
+
+                <h4 class="form-section"><i class="la la-ellipsis-v"></i> Detail</h4>
+
+                <div class="form-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.TieupCodeId, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.TieupCodeId</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.FileType, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.FileType</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.file_type == "txt" || Model.file_type == "others")
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.DelimiterType, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.DelimiterType</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.DelimiterType == "Delimiter")
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.Delimiter, new { @class = "col-md-4 label-control" })
+                                    @if (@Model.delimiter_val == "")
+                                    {
+                                        <div class="col-md-8">
+                                            <label class="form-control-static">@Model.Delimiter</label>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-8">
+                                            <label class="form-control-static">@Model.Delimiter - @Model.delimiter_val</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+
+                    @if (Model.isFilenameValidation == "On" || Model.isFilenameValidation == "Off")
+                    {
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.isFilenameValidation, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.isFilenameValidation</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.isFooterValidation == "On" || Model.isFooterValidation == "Off")
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.isFooterValidation, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.isFooterValidation</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.StartRecord, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.StartRecord</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.DelimiterType == "Fixed Length")
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.Prefix, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.Prefix</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                        <div class="row">
+                            <div class="table-responsive">
+                                @*@{
+                        var naRows = Model.FieldProperties.Where(item => item.ColumnStart == "").ToList();
+                        var nonNaRows = Model.FieldProperties.Where(item => item.ColumnStart != "").ToList();
+                    }*@
+
+                                <table class="table table-striped table-bordered compact myTable" style="width:100%" id="myTableDetail2">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="background-color:red;color:white">Standard File Fields</th>
+                                            <th scope="col" style="background-color:red; color:white">Start Column</th>
+                                            @if (Model.DelimiterType == "Fixed Length")
+                                            {
+                                                <th scope="col" style="background-color:red; color:white">Length</th>
+                                            }
+                                            <th scope="col" style="background-color:red; color:white">Default Value</th>
+                                            <th scope="col" style="background-color:red; color:white">Not Provided?</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.FieldProperties)
+                                        {
+                                            <tr>
+                                                <td>@item.FieldName</td>
+                                                <td>@item.ColumnStart</td>
+                                                @if (Model.DelimiterType == "Fixed Length")
+                                                {
+                                                    <td>@item.ColumnLength</td>
+                                                }
+                                                <td>@item.ColumnDefaultData</td>
+                                                <td>@item.CheckBox</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="form-actions center">
+                    <input type="button" id="btnBack" value="Back" class="btn btn-primary" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var view_ = '@Url.Action("Index", "FormatMapperMaint")';
+        var detail_div = !!document.getElementById("detail_div");
+
+        $(document).ready(function () {
+
+            if (detail_div) {
+                document.getElementById('detail_div').scrollIntoView();
+            }
+
+            $('#btnBack').click(function () {
+                window.location = view_;
+            });
+        });
+    </script>
+}

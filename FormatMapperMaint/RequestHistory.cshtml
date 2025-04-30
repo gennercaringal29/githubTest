@@ -1,0 +1,196 @@
+﻿@{
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    IList<VREMIT.ModelMVC.vwRequestHistFormatMapper> requestHist = ViewBag.RequestHist;
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+}
+
+@section css
+{
+    <style>
+        .search-width {
+            width: 100% !important;
+            margin: 0 1rem;
+        }
+
+        select {
+            text-align-last: center;
+        }
+
+        table.dataTable tbody td {
+            vertical-align: middle;
+        }
+
+            table.dataTable tbody td:nth-child(4),
+            table.dataTable tbody td:nth-child(9) {
+                max-width: 180px;
+                min-width: 180px;
+            }
+    </style>
+}
+
+@if (status != null)
+{
+    <div class="row" id="error_div">
+        <div class="col-md-12">
+            @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+                {
+                    Status = status,
+                    SuccessMessage = success,
+                    ErrorMessage = error
+                });}
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-content">
+
+
+        @using (Html.BeginForm("RequestHistory", "GLAccountSetup", FormMethod.Post, new { @class = "form", @id = "mainForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="card-body">
+
+                @Html.Partial("_PartialSearchRequestHistory")
+
+                @Html.Partial("_PartialRequestHistory", requestHist)
+
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#datatablelist').DataTable({
+                "aaSorting": [],
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        //"targets": [2]
+                    }
+                ],
+                "lengthMenu": [10, 20, 50, 100],
+                "pageLength": 20,
+                "info": false,
+                "sDom": '<"top"l>rt<"hidden"f><"bottom"ip><"clear">',
+                "language": {
+                    "searchPlaceholder": "Search any fields",
+                    "emptyTable": "No data found"
+                },
+                "initComplete": function () {
+                    $('div.dataTables_length select').addClass('form-select');
+                }
+            });
+
+        });
+
+        // Multi Search --
+        @*// new*@
+        $('#global_filter').on('input', function () {
+            filterGlobal()
+        });
+
+        function filterGlobal() {
+            $('#datatablelist').DataTable().search( // table name
+                $('#global_filter').val(),
+                $('#global_regex').prop('checked'),
+                $('#global_smart').prop('checked')
+            ).draw();
+        }
+
+        function multiSearch() {
+            $("form").submit(function (e) {
+                e.preventDefault();
+            });
+
+            // date
+            //var startDate = new Date($("#col7_filter_date").val());
+            //$('#col7_filter').val(startDate.toLocaleDateString("en-US"));
+
+            //if (!isNaN(Date.parse(startDate)) == false) {
+            //    document.getElementById('col7_filter').value = "";
+            //}
+
+            filterGlobal();
+            filterColumn($('#col0_filter').parents('div').attr('data-column'));
+            filterColumn($('#col1_filter').parents('div').attr('data-column'));
+            filterColumn($('#col2_filter').parents('div').attr('data-column'));
+            filterColumn($('#col3_filter').parents('div').attr('data-column'));
+            filterColumn($('#col4_filter').parents('div').attr('data-column'));
+            filterColumn($('#col5_filter').parents('div').attr('data-column'));
+            filterColumn($('#col6_filter').parents('div').attr('data-column'));
+            filterColumn($('#col7_filter').parents('div').attr('data-column'));
+            filterColumn($('#col8_filter').parents('div').attr('data-column'));
+            filterColumn($('#col9_filter').parents('div').attr('data-column'));
+            
+        }
+    
+        function filterColumn(i) {
+            $('#datatablelist').DataTable().column(i).search(
+                $('#col' + i + '_filter').val()
+            ).draw();
+        }
+
+        function clearText() {
+            $("form").submit(function (e) {
+                e.preventDefault();
+            });
+
+            var fields = document.getElementsByTagName('input'), length = fields.length;
+
+            while (length--) {
+                if (fields[length].type === 'text') { fields[length].value = ''; }
+            }
+
+      /*      document.getElementById('col7_filter_date').value = ""; //date*/
+
+            $('#datatablelist').DataTable().search('').columns().search('').draw(); // table name
+            $('#col3_filter').val('');
+            $('#col4_filter').val('');
+            $('#col5_filter').val('');
+            $('#col6_filter').val('');
+            $('#col7_filter').val('');
+            $('#col8_filter').val('');
+            $('#col9_filter').val('');
+            $('#col1_filter').val('');
+
+        }
+
+        function expandSearch() {
+            document.getElementById('expandItem').hidden = false;
+            document.getElementById('expandItem2').hidden = false;
+            document.getElementById('expandItem3').hidden = false;
+            document.getElementById('searchBtn').hidden = false;
+            document.getElementById('shrink').hidden = false;
+            document.getElementById('expand').hidden = true;
+            document.getElementById('global_filter').hidden = true;
+            document.getElementById('gfilter').hidden = true;
+            document.getElementById('global_filter').value = "";
+            $('#datatablelist').DataTable().search('').draw();
+        }
+
+        function shrinkSearch() {
+            document.getElementById('expandItem').hidden = true;
+            document.getElementById('expandItem2').hidden = true;
+            document.getElementById('expandItem3').hidden = true;
+            document.getElementById('searchBtn').hidden = true;
+            document.getElementById('shrink').hidden = true;
+            document.getElementById('expand').hidden = false;
+            document.getElementById('global_filter').hidden = false;
+            document.getElementById('gfilter').hidden = false;
+            document.getElementById('global_filter').value = "";
+            clearText();
+        }
+
+        // End Multi Search --
+    </script>
+}

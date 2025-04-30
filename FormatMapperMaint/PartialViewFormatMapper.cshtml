@@ -1,0 +1,985 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business;
+
+
+<div class="menu-content detail">
+    <div>
+        <h5 class="card-header col-md-2">Detail</h5>
+    </div>
+
+    <div>
+        <div class="form-inline">
+            <h6 class="card-header col-auto"><input id="SetCurChkbox" type="checkbox" onclick="" disabled />  Settlement Currency</h6>
+            @*@Html.DropDownListFor(m => m.TieupViewMaintInputs.settlement_currency, new SelectList(Model.App_Codes,
+                "code_desc", "code_desc"), "-Select-",
+                 new { @class = "column_filter form-control col-md-3", @id = "settlement_currency" })*@
+            @*@Html.DropDownListFor(m => m.TieupViewMaintInputs.settlement_currency, new SelectList(ViewBag.App_Codes, "Value", "Text"),
+                new {@class = "column_filter form-control col-md-3", @id = "settlement_currency", @disabled = "disabled"})*@
+        </div>
+        <div class="col-3 offset-1" style="margin-left:11%">
+            @*@Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_start_record, "", new { @class = "text-danger" })*@
+        </div>
+    </div>
+
+    <div>
+        <div class="form-inline">
+            <h6 class="card-header col-auto">Start Record</h6>
+            @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_start_record, new { @class = "form-control col-md-20", @id = "detail_start_record" })
+        </div>
+    </div>
+
+    <div class="table-responsive menu-subContent detail1">
+        <table class="table myTable" style="width:80%" id="myTableDetail2">
+            <thead>
+                <tr>
+                    <th scope="col">Standard File Fields</th>
+                    <th scope="col" style="text-align: center">Start Column</th>
+                    <th></th>
+                    <th scope="col" style="text-align: center">Length</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td scope="row">Transaction Date</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_transdate_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_transdate_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_transdate_length, new { @class = "form-control col-md-15 ", @id = "detail_transdate_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Application Number</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_application_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_application_start_column" })
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_application_length, new { @class = "form-control col-md-15 ", @id = "detail_application_length" })
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_prefix, new { @class = "form-control col-md-15 ", @id = "d_prefix" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitid_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_remitid_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitid_length, new { @class = "form-control col-md-15 ", @id = "detail_remitid_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter First Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitfname_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_remitfname_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitfname_length, new { @class = "form-control col-md-15 ", @id = "detail_remitfname_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Middle Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitmidname_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_remitmidname_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitmidname_length, new { @class = "form-control col-md-15 ", @id = "detail_remitmidname_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Last Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitlastname_start_column, new { @class = "form-control col-md-15 displayForData", @id = "detail_remitlastname_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.detail_remitlastname_length, new { @class = "form-control col-md-15 ", @id = "detail_remitlastname_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Customer Type</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitCusType_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitCusType_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitCusType_length, new { @class = "form-control col-md-15 ", @id = "d_remitCusType_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Nationality</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitNationality_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitNationality_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitNationality_length, new { @class = "form-control col-md-15 ", @id = "d_remitNationality_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Remitter Address 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitAdd1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd1_length, new { @class = "form-control col-md-15 ", @id = "d_remitAdd1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Address 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitAdd2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd2_length, new { @class = "form-control col-md-15 ", @id = "d_remitAdd2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Address 3</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd3_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitAdd3_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd3_length, new { @class = "form-control col-md-15 ", @id = "d_remitAdd3_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Address 4</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd4_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitAdd4_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitAdd4_length, new { @class = "form-control col-md-15 ", @id = "d_remitAdd4_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Continent</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitContinent_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitContinent_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitContinent_length, new { @class = "form-control col-md-15 ", @id = "d_remitContinent_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Zip Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitZipCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitZipCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitZipCode_length, new { @class = "form-control col-md-15 ", @id = "d_remitZipCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Birth Date</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitBDate_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitBDate_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitBDate_length, new { @class = "form-control col-md-15 ", @id = "d_remitBDate_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Profession</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitProf_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitProf_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitProf_length, new { @class = "form-control col-md-15 ", @id = "d_remitProf_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Remitter Gender</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitGender_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitGender_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitGender_length, new { @class = "form-control col-md-15 ", @id = "d_remitGender_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Civil Status</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitCivilStat_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitCivilStat_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitCivilStat_length, new { @class = "form-control col-md-15 ", @id = "d_remitCivilStat_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter PO Box</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitPOBox_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitPOBox_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitPOBox_length, new { @class = "form-control col-md-15 ", @id = "d_remitPOBox_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Remitter Mobile Phone Number
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitMobPhoneNum_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_length, new { @class = "form-control col-md-15 ", @id = "d_remitMobPhoneNum_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Office Phone Number</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitOfficePhoneNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitOfficePhoneNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitOfficePhoneNo_length, new { @class = "form-control col-md-15 ", @id = "d_remitOfficePhoneNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Email Address</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitEmailAdd_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitEmailAdd_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitEmailAdd_length, new { @class = "form-control col-md-15 ", @id = "d_remitEmailAdd_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Tax ID No.</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitTaxIDNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitTaxIDNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitTaxIDNo_length, new { @class = "form-control col-md-15 ", @id = "d_remitTaxIDNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Type 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDType1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDType1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDType1_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDType1_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Remitter ID Number 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDNum1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDNum1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDNum1_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDNum1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Issue At 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDIssueAt1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDIssueAt1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Expiry Date 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDExpDate1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDExpDate1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Type 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDType2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDType2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDType2_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDType2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Number 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDNo2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDNo2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDNo2_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDNo2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Issue At 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDIssueAt2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt2_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDIssueAt2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter ID Expiry Date 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDExpDate2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitIDExpDate2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitIDExpDate2_length, new { @class = "form-control col-md-15 ", @id = "d_remitIDExpDate2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Remitter Notification Type</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitNotifType_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_remitNotifType_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_remitNotifType_length, new { @class = "form-control col-md-15 ", @id = "d_remitNotifType_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Beneficiary ID</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryID_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryID_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryID_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryID_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary First Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryFName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryFName_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Middle Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryMName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryMName_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Last Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryLName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryLName_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Customer Type</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryCusType_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryCusType_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Address 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryAdd1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryAdd1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Address 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryAdd2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryAdd2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Address 3</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryAdd3_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryAdd3_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Beneficiary Country</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryCountry_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryCountry_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Zip Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_zipCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_zipCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_zipCode_length, new { @class = "form-control col-md-15 ", @id = "d_zipCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Landmark</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_landMark_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_landMark_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_landMark_length, new { @class = "form-control col-md-15 ", @id = "d_landMark_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Nationality</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryNationality_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryNationality_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Birth Date</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryBDate_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryBDate_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Profession</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryProf_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryProf_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryProf_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryProf_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Gender</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryGender_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryGender_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryGender_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryGender_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Civil Status</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCivilStat_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryCivilStat_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryCivilStat_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryCivilStat_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Beneficiary PO Box</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryPOBox_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryPOBox_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryPOBox_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryPOBox_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Beneficiary Relationship
+                        to the Remitter
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryRel_tothe_remit_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryRel_tothe_remit_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Alternate Recipient's
+                        Relation to Beneficiary
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterRecipient_reltobeneficiary_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_alterRecipient_reltobeneficiary_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterRecipient_reltobeneficiary_length, new { @class = "form-control col-md-15 ", @id = "d_alterRecipient_reltobeneficiary_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Beneficiary Mobile
+                        Phone Number
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryMobPhoneNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryMobPhoneNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Beneficiary Office Phone
+                        Number
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryOfficePhoneNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryOfficePhoneNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryOfficePhoneNo_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryOfficePhoneNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Beneficiary Email Address</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryEmailAdd_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryEmailAdd_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Beneficiary Tax
+                        Identification No.
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryTaxIDNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryTaxIDNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryTaxIDNo_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryTaxIDNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Beneficiary Notification
+                        type
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryNotifType_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_beneficiaryNotifType_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_beneficiaryNotifType_length, new { @class = "form-control col-md-15 ", @id = "d_beneficiaryNotifType_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">Funding Currency</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_fundCurrency_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_fundCurrency_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_fundCurrency_length, new { @class = "form-control col-md-15 ", @id = "d_fundCurrency_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Funding Amount</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_fundAmount_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_fundAmount_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_fundAmount_length, new { @class = "form-control col-md-15 ", @id = "d_fundAmount_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Buying Rate</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_buyingRate_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_buyingRate_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_buyingRate_length, new { @class = "form-control col-md-15 ", @id = "d_buyingRate_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Settlement Currency</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementCurrency_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_settlementCurrency_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementCurrency_length, new { @class = "form-control col-md-15 ", @id = "d_settlementCurrency_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Settlement Amount</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementAmount_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_settlementAmount_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementAmount_length, new { @class = "form-control col-md-15 ", @id = "d_settlementAmount_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Settlement Mode</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementMode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_settlementMode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_settlementMode_length, new { @class = "form-control col-md-15 ", @id = "d_settlementMode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bank Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_bankCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_bankCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_bankCode_length, new { @class = "form-control col-md-15 ", @id = "d_bankCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bank Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_bankName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_bankName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_bankName_length, new { @class = "form-control col-md-15 ", @id = "d_bankName_length" })
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td scope="row">Branch Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_branchCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_branchCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_branchCode_length, new { @class = "form-control col-md-15 ", @id = "d_branchCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Branch Name</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_branchName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_branchName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_branchName_length, new { @class = "form-control col-md-15 ", @id = "d_branchName_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Account Type</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_accountType_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_accountType_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_accountType_length, new { @class = "form-control col-md-15 ", @id = "d_accountType_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Account Number</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_accountNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_accountNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_accountNo_length, new { @class = "form-control col-md-15 ", @id = "d_accountNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Gold Card Number</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_goldCardNo_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_goldCardNo_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_goldCardNo_length, new { @class = "form-control col-md-15 ", @id = "d_goldCardNo_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bills Payment Field 1</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField1_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_billsPayField1_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField1_length, new { @class = "form-control col-md-15 ", @id = "d_billsPayField1_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bills Payment Field 2</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField2_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_billsPayField2_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField2_length, new { @class = "form-control col-md-15 ", @id = "d_billsPayField2_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bills Payment Field 3</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField3_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_billsPayField3_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField3_length, new { @class = "form-control col-md-15 ", @id = "d_billsPayField3_length" })
+
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td scope="row">Bills Payment Field 4</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField4_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_billsPayField4_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField4_length, new { @class = "form-control col-md-15 ", @id = "d_billsPayField4_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Bills Payment Field 5</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField5_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_billsPayField5_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_billsPayField5_length, new { @class = "form-control col-md-15 ", @id = "d_billsPayField5_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Outlet Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_outletCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_outletCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_outletCode_length, new { @class = "form-control col-md-15 ", @id = "d_outletCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Outlet Branch Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_outletBranchCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_outletBranchCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_outletBranchCode_length, new { @class = "form-control col-md-15 ", @id = "d_outletBranchCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Alternate Beneficiary
+                        Name
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterBeneficiaryName_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_alterBeneficiaryName_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterBeneficiaryName_length, new { @class = "form-control col-md-15 ", @id = "d_alterBeneficiaryName_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Alternate Beneficiary
+                        relationship to
+                        beneficiary
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterBeneficiary_relto_beneficiary_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_alterBeneficiary_relto_beneficiary_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_alterBeneficiary_relto_beneficiary_length, new { @class = "form-control col-md-15 ", @id = "d_alterBeneficiary_relto_beneficiary_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Message to Beneficiary</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_messageToBeneficiary_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_messageToBeneficiary_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_messageToBeneficiary_length, new { @class = "form-control col-md-15 ", @id = "d_messageToBeneficiary_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Receiver’s correspondent
+                        bank
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_receiverCorresBank_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_receiverCorresBank_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_receiverCorresBank_length, new { @class = "form-control col-md-15 ", @id = "d_receiverCorresBank_length" })
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td scope="row">
+                        Sender’s correspondent
+                        bank
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_senderCorresBank_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_senderCorresBank_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_senderCorresBank_length, new { @class = "form-control col-md-15 ", @id = "d_senderCorresBank_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Sending Bank</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_sendingBank_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_sendingBank_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_sendingBank_length, new { @class = "form-control col-md-15 ", @id = "d_sendingBank_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Receiving Bank</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_receivingBank_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_receivingBank_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_receivingBank_length, new { @class = "form-control col-md-15 ", @id = "d_receivingBank_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Mode of Charge</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_modeOfChange_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_modeOfChange_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_modeOfChange_length, new { @class = "form-control col-md-15 ", @id = "d_modeOfChange_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Purpose Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_purposeCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_purposeCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_purposeCode_length, new { @class = "form-control col-md-15 ", @id = "d_purposeCode_length" })
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">Indv Code</td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_indvCode_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_indvCode_start_column" })
+                    </td>
+                    <td></td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(m => m.TieupViewDetailInputs.d_indvCode_length, new { @class = "form-control col-md-15 ", @id = "d_indvCode_length" })
+                    </td>
+                </tr>
+                @*<tr>
+                        <td scope="row">Detail Hash</td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(m => m.TieupViewDetailInputs.d_detailHash_start_column, new { @class = "form-control col-md-15 displayForData", @id = "d_detailHash_start_column" })
+                        </td>
+                        <td></td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(m => m.TieupViewDetailInputs.d_detailHash_length, new { @class = "form-control col-md-15 ", @id = "d_detailHash_length" })
+                        </td>
+                    </tr>*@
+            </tbody>
+        </table>
+        
+    </div>
+
+
+</div>
+
+
+
+<br />
+
+ @*REMARKS*@ 
+<div class="card" id="remarks">
+        <h5 class="card-header">@Html.LabelFor(m => m.TieupViewMaintInputs.remarks)</h5>
+        <div class="card-body">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.TextAreaFor(m => m.TieupViewMaintInputs.remarks, new { @class = "form-control", @id = "remarks", @placeholder = "Enter Remarks" })
+                        @Html.ValidationMessageFor(m => m.TieupViewMaintInputs.remarks, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ @*END*@ 

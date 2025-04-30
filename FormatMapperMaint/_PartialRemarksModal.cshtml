@@ -1,0 +1,27 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+
+<!-- Modal Remarks-->
+<div class="modal fade" id="modalremarks">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Reason for Deletion</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+
+                    @Html.TextAreaFor(m => m.TieupViewDetailInputs.remarks, new { @class = "form-control", @placeholder = "Enter Remarks", @id = "txtRemarks" })
+                    @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remarks, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <input type="submit" id="btnConfirmDelete" value="Delete" class="btn btn-primary" />
+                <button type="button" id="btnCancelDelete" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

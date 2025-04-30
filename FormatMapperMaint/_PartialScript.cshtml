@@ -1,0 +1,1134 @@
+﻿<script type="text/javascript">
+
+    //var getFaultdata_value = '@Url.Action("GetDefaultDataValue", "FormatMapperMaint")';
+
+    var mappermaint = '@Url.Action("Index", "FormatMapperMaint")'; //change
+    var toDeleteRecord = '@Url.Action("MaintDelete", "FormatMapperMaint")'; // change
+    var editcountry = '@Url.Action("MaintUpdateFormatMapper", "FormatMapperMaint")'; //change
+    var save_ = '@Url.Action("AddNew", "FormatMapperMaint")';
+    var validateListbox = 0;
+
+    var tieupdet = !!document.getElementById("tieupdet");
+    var action_th = !!document.getElementById("action_th");
+    var targets_ = [];
+
+    //var mandatoryFields = [
+    //    "validator",
+    //    "applicationNumber",
+    //    "settlementMode",
+    //    "settlementAmount",
+    //    "fundingAmount",
+    //    "fundingCurrency",
+    //    "remitterFirstName",
+    //    "beneficiaryFirstName",
+    //    "accountNumber",
+    //    "bankCode",
+    //    "beneficiaryAddress1",
+    //    "remitterNationality",
+    //    "remitterAddress1",
+    //    "remitterCountry",
+    //    "remitterZipCode",
+    //    "remitterBirthDate",
+    //    "remitterMobileNumber",
+    //    "remitterIdType1",
+    //    "remitterIdNumber1",
+    //    "remitterIdIssuedAt1",
+    //    "remitterIdExpiry1",
+    //    "beneficiaryMiddleName",
+    //    "beneficiaryLastName",
+    //    "beneficiaryCustomerType",
+    //    "beneficiaryZipCode",
+    //    "beneficiaryNationality",
+    //    "beneficiaryBirthDate",
+    //    "beneficiaryRelationToRemitter",
+    //    "beneficiaryMobileNumber",
+    //    "buyingRate",
+    //    "settlementCurrency",
+    //    "paymentField1",
+    //    "paymentField2",
+    //    "paymentField3",
+    //    "outletCode",
+    //    "senderCorrespondentBank",
+    //    "sendingBank",
+    //    "receivingBank",
+    //    "modeOfCharge",
+    //    "purposeCode",
+    //    "individualCode",
+    //    "natureOfBusiness",
+    //    "remitterId",
+    //    "remitterMiddleName",
+    //    "remitterLastName",
+    //    "remitterCustomerType"
+    //];
+
+    $(document).ready(function () {
+        let firstColumnValues = [];
+
+        $("tr").each(function () {
+            let firstColumnText = $(this).find("td:first").text().trim();
+            firstColumnValues.push(firstColumnText);
+        });
+
+        console.log(firstColumnValues);
+    });
+
+    $(document).ready(function () {
+
+        //for (var i = 0; i < mandatoryFields.length; i++){
+        //    $('.fieldName_button').each(function () {
+        //        var fieldName = $(this).attr('id');
+        //        if (fieldName == mandatoryFields[i]) {
+        //            $(this).closest('tr').hide();
+        //        }
+        //    });
+        //}
+
+        if (tieupdet == true) {
+            document.getElementById('tieupdet').scrollIntoView(); //change
+        }
+
+        if (action_th) {
+            targets_[0] = 4; //Actions column
+        }
+
+        $('#tieuplist').DataTable({
+            "aaSorting": [],
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "targets": targets_
+                }
+            ],
+            "info": false,
+            "lengthMenu": [10, 20, 50, 100],
+            "pageLength": 20,
+            "lengthChange": true,
+            "sDom": '<"top"l>rt<"hidden"f><"bottom"ip><"clear">',
+            "language": {
+                "searchPlaceholder": "Search any fields",
+                "emptyTable": "No data found"
+            },
+            "initComplete": function () {
+                $('div.dataTables_length select').addClass('form-select');
+            }
+        });
+
+            if ("@ViewBag.stext" != "") {
+            swal({
+                title: "@ViewBag.stitle",
+                text: "@ViewBag.stext",
+                icon: "@ViewBag.sicon"
+            })
+            }
+        //console.log("HELLO ASP.NET " + "@ViewBag.stext");
+
+        // FOR TESTING PURPOSES ONLY / DELETE AFTER TESTING -------------------
+        // 1 = Maker , 2 = Approver
+        if ("@ViewBag.permission" != "") {
+            if ("@ViewBag.permission" == "1") {
+                $('#addnew').removeClass('hidden');
+            } else {
+                $('#addnew').addClass('hidden');
+            }
+        }
+        // End ----------------------------------------------------------------
+    });
+
+    // Get input values safely and trim any extra spaces
+    const d_fundCurrency_start_column = document.getElementById('d_fundCurrency_start_column')?.value.trim() || "";
+    const d_fundCurrency_length = document.getElementById('d_fundCurrency_length')?.value.trim() || "";
+    const funding_currency = document.getElementById('funding_currency')?.value.trim() || "";
+
+    const d_fundAmount_start_column = document.getElementById('d_fundAmount_start_column')?.value.trim() || "";
+    const d_fundAmount_length = document.getElementById('d_fundAmount_length')?.value.trim() || "";
+    const fundingAmount = document.getElementById('fundingAmount')?.value.trim() || "";
+
+    const d_settlementCurrency_start_column = document.getElementById('d_settlementCurrency_start_column')?.value.trim() || "";
+    const d_settlementCurrency_length = document.getElementById('d_settlementCurrency_length')?.value.trim() || "";
+    const settlement_currency = document.getElementById('settlement_currency')?.value.trim() || "";
+
+    const d_settlementAmount_start_column = document.getElementById('d_settlementAmount_start_column')?.value.trim() || "";
+    const d_settlementAmount_length = document.getElementById('d_settlementAmount_length')?.value.trim() || "";
+    const settlementAmount = document.getElementById('settlementAmount')?.value.trim() || "";
+
+    const delimiterType = document.getElementById('delimiterType')?.value.trim() || "";
+
+    // Get checkboxes and check if they are checked
+    const fundingCheckboxes = document.getElementsByClassName('funding_checkbox');
+    let isFundingChecked = Array.from(fundingCheckboxes).some(cb => cb.checked);
+
+    const settlementCheckboxes = document.getElementsByClassName('settlement_checkbox');
+    let isSettlementChecked = Array.from(settlementCheckboxes).some(cb => cb.checked);
+
+   
+        Array.from(fundingCheckboxes).forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    // If one checkbox is checked, check all checkboxes in the class
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = true);
+                    $('#d_fundCurrency_start_column').prop("disabled", true).val("");
+                    $('#d_fundCurrency_length').prop("disabled", true).val("");
+                    $('#funding_currency').prop("disabled", false).val("");
+                    $("#d_fundCurrency_start_column").next(".text-danger").text("");
+                    $("#d_fundCurrency_length").next(".text-danger").text("");
+                    
+                    $('#d_fundAmount_start_column').prop("disabled", true).val("");
+                    $('#d_fundAmount_length').prop("disabled", true).val("");
+                    $('#fundingAmount').prop("disabled", false).val("");
+                    $("#d_fundAmount_start_column").next(".text-danger").text("");
+                    $("#d_fundAmount_length").next(".text-danger").text("");
+
+                    //uncheked alternatively settlement
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_settlementCurrency_start_column').prop("disabled", false);
+                    $('#d_settlementCurrency_length').prop("disabled", false);
+                    $('#settlement_currency').prop("disabled", true).val("");
+                    $("#settlement_currency").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", false);
+                    $('#d_settlementAmount_length').prop("disabled", false);
+                    $('#settlementAmount').prop("disabled", true).val("");
+                    $("#settlementAmount").next(".text-danger").text("");
+
+                } else {
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_fundCurrency_start_column').prop("disabled", false).val("");
+                    $('#d_fundCurrency_length').prop("disabled", false).val("");
+                    $('#funding_currency').prop("disabled", true).val("");
+                    $("#funding_currency").next(".text-danger").text("");
+
+                    $('#d_fundAmount_start_column').prop("disabled", false);
+                    $('#d_fundAmount_length').prop("disabled", false);
+                    $('#fundingAmount').prop("disabled", true).val("");
+                    $("#fundingAmount").next(".text-danger").text("");
+                }
+            });
+        });
+
+        Array.from(settlementCheckboxes).forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    // If one checkbox is checked, check all checkboxes in the class
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = true);
+                    $('#d_settlementCurrency_start_column').prop("disabled", true).val("");
+                    $('#d_settlementCurrency_length').prop("disabled", true).val("");
+                    $('#settlement_currency').prop("disabled", false).val("");
+                    $("#d_settlementCurrency_start_column").next(".text-danger").text("");
+                    $("#d_settlementCurrency_length").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", true).val("");
+                    $('#d_settlementAmount_length').prop("disabled", true).val("");
+                    $('#settlementAmount').prop("disabled", false).val("");
+                    $("#d_settlementAmount_start_column").next(".text-danger").text("");
+                    $("#d_settlementAmount_length").next(".text-danger").text("");
+
+                    //uncheked alternatively funding
+                    Array.from(fundingCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_fundCurrency_start_column').prop("disabled", false);
+                    $('#d_fundCurrency_length').prop("disabled", false);
+                    $('#funding_currency').prop("disabled", true).val("");
+                    $("#funding_currency").next(".text-danger").text("");
+
+                    $('#d_fundAmount_start_column').prop("disabled", false);
+                    $('#d_fundAmount_length').prop("disabled", false);
+                    $('#fundingAmount').prop("disabled", true).val("");
+                    $("#fundingAmount").next(".text-danger").text("");
+                } else {
+                    Array.from(settlementCheckboxes).forEach(cb => cb.checked = false);
+                    $('#d_settlementCurrency_start_column').prop("disabled", false).val("");
+                    $('#d_settlementCurrency_length').prop("disabled", false).val("");
+                    $('#settlement_currency').prop("disabled", true).val("");
+                    $("#settlement_currency").next(".text-danger").text("");
+
+                    $('#d_settlementAmount_start_column').prop("disabled", false);
+                    $('#d_settlementAmount_length').prop("disabled", false);
+                    $('#settlementAmount').prop("disabled", true).val("");
+                    $("#settlementAmount").next(".text-danger").text("");
+                }
+            });
+        });
+   
+
+    $('#getDataButton').click(function (e) {
+
+        var dataDict = {};
+
+        $(".defaultDataValue").each(function (index) {
+            var key = $(this).find("td:first").text().trim(); // Get first <td> text
+            var cleanKey = key.replace(/\*/g, "").trim(); // Remove '*' and extra spaces
+            var isChecked = $(this).find("input[type='checkbox']").prop("checked"); // Get checkbox state
+
+            if (cleanKey.length > 0) {
+                dataDict[cleanKey] = isChecked;
+            }
+        });
+
+        console.log("Updated JSON Data:", JSON.stringify(dataDict)); // Debugging
+        $("#jsonDataField").val(JSON.stringify(dataDict)); // Update hidden input field
+
+        if ($("#AddForm").valid()) {
+
+            const d_fundCurrency_start_column = document.getElementById('d_fundCurrency_start_column')?.value.trim() || "";
+            const d_fundCurrency_length = document.getElementById('d_fundCurrency_length')?.value.trim() || "";
+            //const funding_currency = document.getElementById('funding_currency')?.value.trim() || "";
+
+            const d_fundAmount_start_column = document.getElementById('d_fundAmount_start_column')?.value.trim() || "";
+            const d_fundAmount_length = document.getElementById('d_fundAmount_length')?.value.trim() || "";
+            //const fundingAmount = document.getElementById('fundingAmount')?.value.trim() || "";
+
+            const d_settlementCurrency_start_column = document.getElementById('d_settlementCurrency_start_column')?.value.trim() || "";
+            const d_settlementCurrency_length = document.getElementById('d_settlementCurrency_length')?.value.trim() || "";
+            //const settlement_currency = document.getElementById('settlement_currency')?.value.trim() || "";
+
+            const d_settlementAmount_start_column = document.getElementById('d_settlementAmount_start_column')?.value.trim() || "";
+            const d_settlementAmount_length = document.getElementById('d_settlementAmount_length')?.value.trim() || "";
+            //const settlementAmount = document.getElementById('settlementAmount')?.value.trim() || "";
+
+            const delimiterType = document.getElementById('delimiterType')?.value.trim() || "";
+
+            // Get checkboxes and check if they are checked
+            const fundingCheckboxes = document.getElementsByClassName('funding_checkbox');
+            let isFundingChecked = Array.from(fundingCheckboxes).some(cb => cb.checked);
+
+            const settlementCheckboxes = document.getElementsByClassName('settlement_checkbox');
+            let isSettlementChecked = Array.from(settlementCheckboxes).some(cb => cb.checked);
+
+            // Check conditions and show alert if needed
+            if (
+                // Case 1: Both Funding & Settlement fields are empty AND checkboxes are unchecked
+                (!isFundingChecked && !isSettlementChecked &&
+                    d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                // Case 2: Only one funding field is filled, but not both, AND funding checkbox is unchecked
+                (!isFundingChecked && d_fundCurrency_start_column !== "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                (!isFundingChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column !== "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "") ||
+
+                // Case 3: Only one settlement field is filled, but not both, AND settlement checkbox is unchecked
+                (!isSettlementChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column !== "" && d_settlementAmount_start_column === "") ||
+
+                (!isSettlementChecked && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column !== "") ||
+
+                // Case 4: One funding field and one settlement field are filled (not a valid pair) AND checkboxes are unchecked
+                (!isFundingChecked && !isSettlementChecked &&
+                    (d_fundCurrency_start_column === "" || d_fundAmount_start_column === "") &&
+                    (d_settlementCurrency_start_column === "" || d_settlementAmount_start_column === "") &&
+                    (d_fundCurrency_start_column !== "" || d_fundAmount_start_column !== "") &&
+                    (d_settlementCurrency_start_column !== "" || d_settlementAmount_start_column !== ""))
+            ) {
+                alertMessage();
+                return false; // Stop execution
+
+            } else if (
+                // Case 1: Both Funding & Settlement fields are empty AND checkboxes are unchecked
+                (!isFundingChecked && delimiterType === "Fixed Length" && !isSettlementChecked &&
+                    d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                    d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                    d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                // Case 2: Only one funding field is filled, but not both, AND funding checkbox is unchecked
+                (!isFundingChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column !== "" && d_fundAmount_start_column === "" &&
+                    d_fundCurrency_length !== "" && d_fundAmount_length === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                    d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                (!isFundingChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column !== "" &&
+                    d_fundAmount_length !== "" && d_fundCurrency_length === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column === "" &&
+                    d_settlementCurrency_length === "" && d_settlementAmount_length === "") ||
+
+                // Case 3: Only one settlement field is filled, but not both, AND settlement checkbox is unchecked
+                (!isSettlementChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column !== "" && d_settlementAmount_start_column === "" &&
+                    d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                    d_settlementCurrency_length !== "" && d_settlementAmount_length === "") ||
+
+                (!isSettlementChecked && delimiterType === "Fixed Length" && d_fundCurrency_start_column === "" && d_fundAmount_start_column === "" &&
+                    d_settlementCurrency_start_column === "" && d_settlementAmount_start_column !== "" &&
+                    d_fundCurrency_length === "" && d_fundAmount_length === "" &&
+                    d_settlementCurrency_length === "" && d_settlementAmount_length !== "") ||
+
+                // Case 4: One funding field and one settlement field are filled (not a valid pair) AND checkboxes are unchecked
+                (!isFundingChecked && !isSettlementChecked && delimiterType === "Fixed Length" &&
+                    (d_fundCurrency_start_column === "" || d_fundAmount_start_column === "") &&
+                    (d_settlementCurrency_start_column === "" || d_settlementAmount_start_column === "") &&
+                    (d_fundCurrency_start_column !== "" || d_fundAmount_start_column !== "") &&
+                    (d_settlementCurrency_start_column !== "" || d_settlementAmount_start_column !== "") &&
+                    (d_fundCurrency_length === "" || d_fundAmount_length === "") &&
+                    (d_settlementCurrency_length === "" || d_settlementAmount_length === ""))
+            ) {
+                alertMessage();
+                return false; // Stop execution
+            }
+
+            
+
+
+            var form = $("#AddForm").serialize();
+            swal({
+                title: "Are you sure?",
+                text: "Make sure your informations are correct.",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmed) => {
+                if (confirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: save_,
+                        data: form,
+                        dataType: 'json',
+                        statusCode: {
+                            401: function () {
+                                window.location = "/oops.html";
+                            }
+                        },
+                        success: function (data) {
+                            var title = data.title;
+                            var text = data.text;
+                            var icon = data.icon;
+                            swal({
+                                title: title,
+                                text: text,
+                                icon: icon,
+                            }).then(() => {
+                                if (icon !== "error") {
+                                    //window.location.href = view_;
+                                    window.location.reload();
+                                } else {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    function alertMessage() {
+        swal({
+            title: "Alert!",
+            text: "Configure at least one pair—(1) Settlement Amount & Currency or (2) Funding Amount & Currency. Both are allowed if necessary",
+            icon: "warning"
+        });
+    }
+
+    $(document).ready(function () {
+        var fundCur = document.getElementById('funding_currency');
+        var settleCur = document.getElementById('settlement_currency');
+
+        $('#settlement_currency').change(function () {
+
+            var validate = $(this).val();
+
+            if (fundCur.value === "PHP" && settleCur.value === "USD") {
+                swal({
+                    title: "Alert!",
+                    text: "Invalid Settlement Currency",
+                    icon: "warning",
+                }).then(() => {
+                    $(this).val("");
+                });
+            } else if (fundCur.value === "STC" && validate === "Funding Currency") {
+                swal({
+                    title: "Alert!",
+                    text: "Invalid Settlement Currency",
+                    icon: "warning",
+                }).then(() => {
+                    $(this).val("");
+                });
+            }
+            
+        });
+
+        $('#funding_currency').change(function () {
+
+            if (fundCur.value == "PHP" && settleCur.value == "USD") {
+                swal({
+                    title: "Alert!",
+                    text: "Invalid Funding Currency",
+                    icon: "warning",
+                }).then(() => {
+                    $(this).val("");
+                });
+            } else if (fundCur.value == "STC" && settleCur.value == "Funding Currency") {
+                swal({
+                    title: "Alert!",
+                    text: "Invalid Funding Currency",
+                    icon: "warning",
+                }).then(() => {
+                    $(this).val("");
+                });
+            }
+
+        });
+
+        
+
+    });
+
+        $(document).ready(function () {
+            $('#myCheckbox2').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#isFilenameValidation').val("On");
+                } else {
+                    $('#isFilenameValidation').val("Off");
+                }
+
+                //console.log(checkboxValue);
+            });
+
+            $('#myCheckbox3').change(function () {
+                var checkboxValue = $(this).is(':checked') ? 'On' : 'Off';
+
+                if (checkboxValue == "On") {
+                    $('#isFooterValidation').val("On");
+                } else {
+                    $('#isFooterValidation').val("Off");
+                }
+
+                // console.log(checkboxValue);
+            });
+        });
+
+
+    //Default Value Condition Checkbox
+    $(document).ready(function () {
+        var table = $("#myTableDetail1"); // Target only this table
+
+        // On page load: disable all 4th column input fields within this table
+        table.find("tr").each(function () {
+            var secondColumnField = $(this).find("td:nth-child(2) input[type='text']");
+            var thirdColumnField = $(this).find("td:nth-child(3) input[type='text']");
+            var inputField = $(this).find("td:nth-child(4)").find("input[type='text'], select");
+            var checkbox = $(this).find("td:nth-child(5) input[type='checkbox']");
+
+            inputField.prop("disabled", true); // Disable input initially
+
+            if (inputField.val() !== "") {
+                checkbox.prop("checked", true);
+                inputField.prop("disabled", false);
+
+                secondColumnField.prop("disabled", true);
+                thirdColumnField.prop("disabled", true);
+            }
+
+            checkbox.on("change", function () {
+                if (!$(this).is(":checked")) {
+                    inputField.prop("disabled", true).val("");
+                    inputField.closest("td").find(".text-danger").text(""); // Remove error message only in column 4
+                } else {
+                    inputField.prop("disabled", false);
+                    secondColumnField.closest("td").find(".text-danger").text("");
+                    thirdColumnField.closest("td").find(".text-danger").text("");
+                }
+            });
+        });
+
+        // When the checkbox is clicked
+        table.find("td:nth-child(5) input[type='checkbox']").on("change", function () {
+            var row = $(this).closest("tr");
+            var secondColumnField = row.find("td:nth-child(2) input[type='text']");
+            var thirdColumnField = row.find("td:nth-child(3) input[type='text']");
+            var inputField = row.find("td:nth-child(4)").find("input[type='text'], select");
+
+            if ($(this).is(":checked")) {
+                secondColumnField.prop("disabled", true).val(""); // Disable & clear 2nd column
+                thirdColumnField.prop("disabled", true).val(""); // Disable & clear 3rd column
+                inputField.prop("disabled", false);
+            } else {
+                secondColumnField.prop("disabled", false);
+                thirdColumnField.prop("disabled", false);
+                inputField.prop("disabled", true).val("");
+            }
+        });
+
+        // Sorts all disabled checkboxes at the bottom within this table
+        var tableBody = table.find("tbody");
+        if (tableBody.length === 0) {
+            tableBody = table;
+        }
+
+        var rows = table.find("tr").get();
+
+        rows.sort(function (a, b) {
+            var aNotReq = $(a).find("td:nth-child(5) input[type='checkbox']").hasClass("provided_notReq");
+            var bNotReq = $(b).find("td:nth-child(5) input[type='checkbox']").hasClass("provided_notReq");
+
+            return aNotReq - bNotReq; // Moves "notReq" checkboxes to the bottom
+        });
+
+        $.each(rows, function (index, row) {
+            tableBody.append(row);
+        });
+
+        // Adding asterisks to required fields
+        table.find("td:nth-child(5) input[type='checkbox'].provided").each(function () {
+            var row = $(this).closest("tr");
+            var firstColumn = row.find("td:nth-child(1)"); // Target the first column
+
+            if (!$(this).prop("disabled")) {
+                firstColumn.append(" <span class='required' style='color:red;'>*</span>");
+            }
+        });
+    });
+
+
+
+
+        $(document).ready(function () {
+
+            //var dataTableRow = $('#fieldNameTable').DataTable();
+
+            ////for settlement dropdown
+            //var checkbox = document.getElementById('SetCurChkbox');
+            //var settlement_currency = document.getElementById('settlement_currency');
+
+            //if (checkbox) {
+            //    checkbox.addEventListener('change', function () {
+            //        if (this.checked) {
+            //            settlement_currency.disabled = false;
+
+            //            $("#settlement_currency").next(".text-danger").text("Settlement Currency is required.");
+
+            //        } else {
+            //            settlement_currency.disabled = true;
+            //            settlement_currency.value = '';
+            //            $("#settlement_currency").next(".text-danger").text("");
+            //        }
+            //    });
+            //}
+
+
+            const XLXS = "xlxs";
+            const CSV = "csv";
+            const TXT = "txt";
+            const OTHER = "Other";
+            const NO_SELECTED_FILE_TYPE = "-Select-";
+            const DELIMITER = "Delimiter";
+            const FIXED_LENGTH = "Fixed Length";
+            $("#myTableDetail1 .length-column").hide();
+
+            $(".myTableDetail tr > *:nth-child(3)").hide();
+
+            //File type
+            $("#fileType").on("change", function () {
+                var selectedFileType = $("#fileType").val();
+
+                if (selectedFileType == XLXS || selectedFileType == NO_SELECTED_FILE_TYPE || selectedFileType == "") {
+                    $("#footerCheckBox").hide();
+                    $("#parentDelimiterDiv").hide();
+                    $(".delimiterGroup").hide();
+                    $("#delimiter_val").hide();
+                    var checkboxfooter = document.getElementById('myCheckbox3');
+                    checkboxfooter.checked = false;
+                    $("#delimiterType").val(null);
+                    $("#delimiter").val(null);
+                    $("#delimiter_val").val(null);
+                    $("#myTableDetail1 .length-column").hide();
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    $("#dLimiter").text("");
+                    $("#valDelimiter").text("");
+                }
+
+                else if (selectedFileType == CSV) {
+                    $("#footerCheckBox").show();
+                    $("#parentDelimiterDiv").hide();
+                    $(".delimiterGroup").hide();
+                    $("#delimiter_val").hide();
+                    $("#delimiterType").val(null);
+                    $("#delimiter").val(null);
+                    $("#delimiter_val").val(null);
+                    $("#myTableDetail1 .length-column").hide();
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                    $("#dLimiter").text("");
+                    $("#valDelimiter").text("");
+                }
+                else if (selectedFileType == TXT || selectedFileType == "others") {
+                    $("#footerCheckBox").show();
+                    $("#parentDelimiterDiv").show();
+                    $(".delimiterGroup").hide();
+                    $("#delimiter_val").hide();
+
+                    if ((selectedFileType === "others" || selectedFileType == "txt") && $("#delimiterType").val() == "Delimiter") {
+                        $(".delimiterGroup").show();
+                        $("#delimiter_val").show();
+                    }
+                }
+            });
+
+            //Delimiter Type
+            $("#delimiterType").on("change", function () {
+
+                const delimiterType = document.getElementById("delimiterType").value;
+                const delimiterLabel = document.getElementById("delimiterLabel");
+                const delimiterDropdown = document.getElementById("delimiterDropdown");
+                const delimiterTextbox = document.getElementById("delimiterTextbox");
+                const prefix = document.getElementById("prefix");
+                const prefixLabel = document.getElementById("prefix_label");
+
+                if (delimiterType === "Delimiter") {
+                    delimiterLabel.style.display = "block";
+                    delimiterDropdown.style.display = "block";
+
+                    prefix.style.display = "none";
+                    prefixLabel.style.display = "none";
+                    $("#d_pefix").text("");
+                    $("#app_prefix").val("");
+
+                } else {
+                    delimiterLabel.style.display = "none";
+                    delimiterDropdown.style.display = "none";
+                    prefix.style.display = "block";
+                    prefixLabel.style.display = "block";
+                    delimiterTextbox.style.display = "none";
+                }
+
+                var elements = document.querySelectorAll('[id$="_length"]');
+                elements.forEach(function (element) {
+                    element.value = '';
+                });
+
+                var selectedDelimiterType = $("#delimiterType").val();
+                $("#delimiter_type_message").text("");
+
+                if (selectedDelimiterType == DELIMITER) {
+                    $(".delimiterGroup").show();
+                    $("#delimiter_val").hide();
+                    $("#myTableDetail1 .length-column").hide();
+                    $(".myTableDetail tr > *:nth-child(3)").hide();
+                }
+                else if (selectedDelimiterType == FIXED_LENGTH) {
+                    $(".delimiterGroup").hide();
+                    $("#delimiter_val").hide();
+                    $("#delimiter")[0].selectedIndex = 0;
+
+                    //show length td
+                    $("#myTableDetail1 .length-column").show();
+                    $(".myTableDetail tr > *:nth-child(3)").show();
+                    $("#dLimiter").text("");
+                    $("#valDelimiter").text("");
+
+                } else if (selectedDelimiterType == NO_SELECTED_FILE_TYPE) {
+                    $(".delimiterGroup").hide();
+                    $("#delimiter_val").hide();
+                    $("#delimiter")[0].selectedIndex = 0;
+                    $("#myTableDetail1 .length-column").hide();
+                }
+            });
+
+            //Delimiter
+            $("#delimiter").on("change", function () {
+
+                var selectedDelimiter = $("#delimiter").val();
+                $("#valDelimiter").text("");
+
+                if (selectedDelimiter == OTHER) {
+                    $("#delimiter_val").show();
+                    $("#dLimiter").text("");
+                    $("#delimiter_val").val("");
+                }
+                else {
+                    $("#delimiter_val").hide();
+                    $("#valDelimiter").text("");
+                    $("#delimiter_val").val("");
+                }
+            });
+
+            var $content = $('.menu-content');
+            function showContent(type) {
+                $content.hide().filter('.' + type).show();
+            }
+            var $subContent = $('.menu-subContent');
+            function showSubContent(type) {
+                $subContent.hide().filter('.' + type).show();
+            }
+
+            $('.menu').on('click', '.menu-btn', function (e) {
+                // get the type to pass to showContent by grabbing
+                // the hash from the anchor href and removing the first
+                // character (the #)
+                showContent(e.currentTarget.hash.slice(1));
+                e.preventDefault();
+            });
+
+            $('.submenu').on('click', '.submenu-btn', function (e) {
+                showSubContent(e.currentTarget.hash.slice(1));
+                e.preventDefault();
+                $(".menus").show();
+            });
+
+            // show 'detail' content only on page load
+            showContent('detail');
+            $(".menus").hide();
+
+
+        });
+
+
+
+    // <--- EDIT --->
+    $('#tieuplist tbody').on('click', '.btnEdit', function () {
+        const pkId = this.getAttribute('data-pk');
+
+            var tieup = {
+                tieup_code_id: pkId
+            };
+
+            $.ajax({
+                type: 'POST', // Use POST method to send data to the server
+                url: '@Url.Action("CheckDuplicateRequest", "FormatMapperMaint")',
+                data: tieup,
+                dataType: 'json',
+                statusCode: {
+                    401: function () {
+                        window.location = "/oops.html";
+                    }
+                },
+                success: function (data) {
+                    if (data.icon === 'error') {
+                        swal({
+                            title: "Unable to Edit!",
+                            text: data.text,
+                            icon: data.icon
+                        }).then(() => {
+                            //window.location.reload(); // Reload the page if there are duplicates
+                        });
+                    } else {
+                        window.location.href = '@Url.Action("MaintEditFormatMapper", "FormatMapperMaint")?i=' + pkId;
+                    }
+                }
+            });
+    });
+
+     //<--- START FOR DELETE --->
+        var DeletePkId = "";
+    $('#tieuplist tbody').on('click', '.btnDelete', function () {
+            const pkId = this.getAttribute('data-pk');
+            DeletePkId = pkId;
+
+            var tieup = {
+                tieup_code_id: pkId
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CheckDuplicateRequest", "FormatMapperMaint")',
+                //data: { i: pkId },
+                data: tieup,
+                dataType: 'json',
+                statusCode: {
+                    401: function () {
+                        window.location = "/oops.html";
+                    }
+                },
+                success: function (data) {
+                    if (data.icon == 'error') {
+                        swal({
+                            title: "Unable to Delete!",
+                            text: data.text,
+                            icon: data.icon
+                        }).then(() => {
+                            window.location.reload(); // Reload the page if there are duplicates
+                        });
+                    } else {
+                        $("#txtRemarks").val('');
+                        $('#modalremarks').modal('show');
+                    }
+                }
+            });
+        });
+
+
+        $('#btnConfirmDelete').click(function () {
+            var pkId = DeletePkId;
+            console.log("pkId " + pkId);
+            var remarks = $("#txtRemarks").val();
+
+            if (remarks.length < 1) {
+                $("#txtRemarks").next(".text-danger").text("Remarks is required.");
+                return false;
+            } else {
+                confirm_clicked(pkId, remarks);
+            }
+        });
+
+    $("#modalremarks").on('hide.bs.modal', function () {
+        $("#txtRemarks").val('');
+        $("#txtRemarks").next(".text-danger").text('');
+    });
+
+
+    function confirm_clicked(pkId, remarks) {
+        $("form").submit(function (e) {
+            e.preventDefault();
+        });
+
+        if ($("#tieupForm").valid()) {
+            swal({
+                title: "Delete",
+                text: "Are you sure you want to delete this record?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: toDeleteRecord,
+                        data: { i: pkId, remarks: remarks },
+                        dataType: 'json',
+                        statusCode: {
+                            401: function () {
+                                window.location = "/oops.html";
+                            }
+                        },
+                        success: function (data) {
+                            if (data === "OK") {
+                                swal({
+                                    title: "Delete",
+                                    text: "Deletion request has been successfully submitted for approval.",
+                                    icon: "success",
+                                    closeOnClickOutside: false
+                                }).then((okayed) => {
+                                    if (okayed) {
+                                        /*window.location.href = view_;*/
+                                        $("#txtRemarks").val("");
+                                        $('#modalremarks').modal('hide');
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                alert(data);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    //for dropdown populaion
+
+   /* string[] */
+
+    //$("#tieup_codes").on("change", function (e) {
+    //    $("form").submit(function (e) {
+    //        e.preventDefault();
+    //    });
+
+    //    var tieup = $("#tieup_codes").val();
+    //    console.log("tieup: " + tieup);
+
+    //    var fieldNames = [
+    //        "accountNumber1",
+    //        "accountType1",
+    //        "alternateBeneficiary1",
+    //        "alternateBeneficiaryRelationToBeneficiary1",
+    //        "alternateBeneficiaryRelationToBeneficiary1",
+    //        "applicationNumber1",
+    //        "bankCode1",
+    //        "bankName1",
+    //        "beneficiaryAddress11",
+    //        "beneficiaryAddress21",
+    //        "beneficiaryAddress31",
+    //        "beneficiaryBirthDate1",
+    //        "beneficiaryCivilStatus1",
+    //        "beneficiaryCountry1",
+    //        "beneficiaryCustomerType1",
+    //        "beneficiaryEmail1",
+    //        "beneficiaryFirstName1",
+    //        "beneficiaryGender1",
+    //        "beneficiaryId1",
+    //        "beneficiaryLastName1",
+    //        "beneficiaryMiddleName1",
+    //        "beneficiaryMobileNumber1",
+    //        "beneficiaryNationality1",
+    //        "beneficiaryNotificationType1",
+    //        "beneficiaryOfficeNumber1",
+    //        "beneficiaryPoBox1",
+    //        "beneficiaryProfession1",
+    //        "beneficiaryRelationToRemitter1",
+    //        "beneficiaryTin1",
+    //        "paymentField11",
+    //        "paymentField21",
+    //        "paymentField31",
+    //        "paymentField41",
+    //        "paymentField51",
+    //        "bankCode1",
+    //        "branchName1",
+    //        "buyingRate1",
+    //        "fundingAmount1",
+    //        "fundingCurrency1",
+    //        "goldCardNumber1",
+    //        "individualCode1",
+    //        "beneficiaryLandmark1",
+    //        "messageToBeneficiary1",
+    //        "modeOfCharge1",
+    //        "outletBranchCode1",
+    //        "outletCode1",
+    //        "purposeCode1",
+    //        "receiverCorrespondentBank1",
+    //        "receivingBank1",
+    //        "remitterAddress11",
+    //        "remitterAddress21",
+    //        "remitterAddress31",
+    //        "remitterAddress41",
+    //        "remitterBirthDate1",
+    //        "remitterCivilStatus1",
+    //        "remitterContinent1",
+    //        "remitterCustomerType1",
+    //        "remitterEmail1",
+    //        "remitterFirstName1",
+    //        "remitterGender1",
+    //        "remitterId1",
+    //        "remitterIdExpiry11",
+    //        "remitterIdExpiry21",
+    //        "remitterIdIssuedAt11",
+    //        "remitterIdIssuedAt21",
+    //        "remitterIdNumber11",
+    //        "remitterIdNumber21",
+    //        "remitterIdType11",
+    //        "remitterIdType21",
+    //        "remitterLastName1",
+    //        "remitterMiddleName1",
+    //        "remitterMobileNumber1",
+    //        "remitterNationality1",
+    //        "remitterNotificationType1",
+    //        "remitterOfficeNumber1",
+    //        "remitterPoBox1",
+    //        "remitterProfession1",
+    //        "remitterTin1",
+    //        "remitterZipCode1",
+    //        "senderCorrespondentBank1",
+    //        "sendingBank1",
+    //        "settlementAmount1",
+    //        "settlementCurrency1",
+    //        "settlementMode1",
+    //        "transactionDate1"
+    //    ];
+
+
+    //    if (tieup != "") {
+    //        $.ajax({
+    //            type: 'POST',
+    //            url: getFaultdata_value,
+    //            data: { defaultval: tieup },
+    //            dataType: 'json',
+    //            statusCode: {
+    //                401: function () {
+    //                    window.location = "/oops.html";
+    //                }
+    //            },
+    //            success: function (data) {
+
+    //                for (var id = 0; id < fieldNames.length; id++) {
+    //                    $("#" + fieldNames[id]).val("");
+    //                }
+
+    //                console.log("entered");
+    //                for (var i = 0; i < data.length; i++) {
+    //                    for (var index = 0; index < fieldNames.length; index++) {
+
+    //                        var field = fieldNames[index].slice(0, -1);
+    //                        if (data[i].FieldName == field) {
+    //                            $("#" + fieldNames[index].trim()).val(data[i].DefaultValue.trim());
+    //                        }
+    //                    }
+    //                }
+    //            },
+    //        });
+    //    } else {
+    //        $("#remitterAddress11").empty();
+    //        e.preventDefault();
+    //    }
+    //});
+
+
+    //<--- END FOR DELETE --->
+
+    // Multi Search --
+
+    //for auto search while typing
+    $('#global_filter').on('input', function () {
+        filterGlobal()
+    });
+
+    function filterGlobal() {
+        $('#tieuplist').DataTable().search(
+            $('#global_filter').val(),
+            $('#global_regex').prop('checked'),
+            $('#global_smart').prop('checked')
+        ).draw();
+    }
+
+    function multiSearch() {
+        $("form").submit(function (e) {
+            e.preventDefault();
+        });
+        $('#tieuplist').DataTable().search('').columns().search('').draw();
+        filterGlobal();
+        filterColumn($('#col0_filter').parents('div').attr('data-column'));
+        filterColumn($('#col1_filter').parents('div').attr('data-column'));
+        filterColumn($('#col2_filter').parents('div').attr('data-column'));
+    }
+
+    function filterColumn(i) {
+        var dataTable = $('#tieuplist').DataTable();
+        var colValue = $('#col' + i + '_filter').val();
+
+        if (colValue !== "") {
+            if (i == 3) {
+                var inputDate = new Date(colValue);
+                colValue = inputDate.toLocaleDateString();
+            }
+            dataTable.column(i).search(colValue).draw();
+        }
+    }
+
+    function clearTxt() {
+        $("form").submit(function (e) {
+            e.preventDefault();
+        });
+
+        var fields = document.getElementsByTagName('input'), length = fields.length;
+
+        while (length--) {
+            if (fields[length].type === 'text') { fields[length].value = ''; }
+        }
+
+        $('#tieuplist').DataTable().search('').columns().search('').draw(); // table name
+        $('#col1_filter').val(''); // dropdown
+        $('#col0_filter').val(''); // dropdown
+    }
+
+    function expandSearch() {
+        document.getElementById('expandItem').hidden = false;
+        document.getElementById('searchBtn').hidden = false;
+        document.getElementById('shrink').hidden = false;
+        document.getElementById('expand').hidden = true;
+        document.getElementById('global_filter').hidden = true;
+        document.getElementById('global_filter').value = "";
+    }
+
+    function shrinkSearch() {
+        document.getElementById('expandItem').hidden = true;
+        document.getElementById('searchBtn').hidden = true;
+        document.getElementById('shrink').hidden = true;
+        document.getElementById('expand').hidden = false;
+        document.getElementById('global_filter').hidden = false;
+        document.getElementById('global_filter').value = "";
+    }
+    // End Multi Search --
+
+</script>

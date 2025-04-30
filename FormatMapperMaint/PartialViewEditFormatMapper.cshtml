@@ -1,0 +1,1434 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business
+@using VREMIT.Auth
+
+
+<div>
+    <div class="row mb-4 align-items-center">
+        <label class="col-md-auto col-form-label">Start Record <span style="color:red;">*</span> </label>
+        <div class="col-md-auto">
+            @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_start_record, new { @class = "form-control track-changes", @id = "detail_start_record" })
+            @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_start_record, "", new { @class = "text-danger" })
+        </div>
+
+        <label class="col-md-auto col-form-label" id="prefix_label" style="display: none;">Application Number Prefix</label>
+        <div class="col-md-auto" id="prefix" style="display: none">
+            @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_prefix, new
+            {
+           @class = "form-control",
+           @placeholder = "prefix(e.g. FT)",
+           @id = "app_prefix"
+            })
+            @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_prefix, "", new { @class = "text-danger", @id = "d_pefix" })
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="">
+    <div class="table-responsive menu-subContent detail1">
+        <table class="table myTableDetail table-bordered compact" style="width:100%" id="myTableDetail1">
+            <thead>
+                <tr>
+                    <th class="table-header">Standard File Fields</th>
+                    <th class="table-header">Start Column</th>
+                    <th class="table-header">Length</th>
+                    <th class="table-header">Default Value</th>
+                    <th class="table-header">Not Provided?</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr class="defaultDataValue  1" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Transaction Date</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_transdate_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_transdate_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_transdate_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_transdate_length, new { @class = "form-control col-md-15", @id = "detail_transdate_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_transdate_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.transactionDate, new { @class = "form-control col-md-15 count-field", @id = "transactionDate1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.transactionDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_2">
+                    <td calss="tdCalss" scope="row">Application Number</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_application_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_application_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_application_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_application_length, new { @class = "form-control col-md-15", @id = "detail_application_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_application_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.applicationNumber, new { @class = "form-control col-md-15 count-field", @id = "applicationNumber1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.applicationNumber, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Funding Currency</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_fundCurrency_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_fundCurrency_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_fundCurrency_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_fundCurrency_length, new { @class = "form-control col-md-15", @id = "d_fundCurrency_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_fundCurrency_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @{
+                            List<SelectListItem>
+                           customItems1 = new List<SelectListItem>
+                            {
+                            new SelectListItem { Value = "PHP", Text = "PHP" },
+                            new SelectListItem { Value = "USD", Text = "USD" },
+                            new SelectListItem { Value = "STC", Text = "Settlement Currency" }
+                            };
+                            @Html.DropDownListFor(m => m.TieupViewDetailInputs.fundingCurrency, customItems1, "-Select-",
+                            new
+                            {
+                                @class = "column_filter form-select selectDelimit",
+                                @id = "funding_currency",
+                            })
+                            @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.fundingCurrency, "", new { @class = "text-danger" })
+                        }
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="fundingPovided funding_checkbox provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Funding Amount</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_fundAmount_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_fundAmount_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_fundAmount_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_fundAmount_length, new { @class = "form-control col-md-15", @id = "d_fundAmount_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_fundAmount_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.fundingAmount, new { @class = "form-control col-md-15 count-field", @id = "fundingAmount" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.fundingAmount, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="funding_checkbox provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Settlement Currency</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementCurrency_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_settlementCurrency_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementCurrency_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementCurrency_length, new { @class = "form-control col-md-15", @id = "d_settlementCurrency_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementCurrency_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.TieupViewDetailInputs.settlementCurrency,
+                        new SelectList(Model.SettlementCurrency1, "code_val", "code_val"),
+                        "-Select-",
+                        new
+                        {
+                        @class = "column_filter form-select",
+                        @id = "settlement_currency",
+                        })
+                        @*@Html.TextBoxFor(m => m.TieupViewDetailInputs.settlementCurrency, new { @class = "form-control col-md-15 count-field", @id = "settlementCurrency1" })*@
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.settlementCurrency, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="settlement_checkbox settlementPovided provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Settlement Amount</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementAmount_start_column, new { @class = "form-control col-md-15", @id = "d_settlementAmount_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementAmount_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementAmount_length, new { @class = "form-control col-md-15", @id = "d_settlementAmount_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementAmount_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.settlementAmount, new { @class = "form-control col-md-15", @id = "settlementAmount" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.settlementAmount, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="settlement_checkbox provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Settlement Mode</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementMode_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_settlementMode_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementMode_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_settlementMode_length, new { @class = "form-control col-md-15", @id = "d_settlementMode_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_settlementMode_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.settlementMode, new { @class = "form-control col-md-15 count-field", @id = "settlementMode1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.settlementMode, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Bank Code</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_bankCode_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_bankCode_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_bankCode_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_bankCode_length, new { @class = "form-control col-md-15", @id = "d_bankCode_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_bankCode_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.bankCode, new { @class = "form-control col-md-15 count-field", @id = "bankCode1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.bankCode, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  64" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Bank Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_bankName_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_bankName_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_bankName_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_bankName_length, new { @class = "form-control col-md-15", @id = "d_bankName_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_bankName_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.bankName, new { @class = "form-control col-md-15 count-field", @id = "bankName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.bankName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Account Number</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_accountNo_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_accountNo_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_accountNo_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_accountNo_length, new { @class = "form-control col-md-15", @id = "d_accountNo_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_accountNo_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.accountNumber, new { @class = "form-control col-md-15 count-field", @id = "accountNumber1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.accountNumber, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- START NEW ADDED -->
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Account Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.AcctNameStartColumn, new { @class = "form-control col-md-15 count-field", @id = "AcctNameStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.AcctNameStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.AcctNameLength, new { @class = "form-control col-md-15", @id = "AcctNameLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.AcctNameLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.AcctNameDefault, new { @class = "form-control col-md-15 count-field", @id = "AcctNameDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.AcctNameDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <!-- END NEW ADDED -->
+
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Outlet Code</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_outletCode_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_outletCode_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_outletCode_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_outletCode_length, new { @class = "form-control col-md-15", @id = "d_outletCode_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_outletCode_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.outletCode, new { @class = "form-control col-md-15 count-field", @id = "outletCode1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.outletCode, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">   Remitter First Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitfname_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_remitfname_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitfname_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitfname_length, new { @class = "form-control col-md-15", @id = "detail_remitfname_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitfname_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterFirstName, new { @class = "form-control col-md-15 count-field", @id = "remitterFirstName" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterFirstName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">   Remitter Middle Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitmidname_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_remitmidname_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitmidname_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitmidname_length, new { @class = "form-control col-md-15", @id = "detail_remitmidname_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitmidname_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterMiddleName, new { @class = "form-control col-md-15 count-field", @id = "remitterMiddleName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterMiddleName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Last Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitlastname_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_remitlastname_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitlastname_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitlastname_length, new { @class = "form-control col-md-15", @id = "detail_remitlastname_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitlastname_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterLastName, new { @class = "form-control col-md-15 count-field", @id = "remitterLastName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterLastName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_3">
+                    <td calss="tdCalss" scope="row">Remitter ID</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitid_start_column, new { @class = "form-control col-md-15 count-field", @id = "detail_remitid_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitid_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.detail_remitid_length, new { @class = "form-control col-md-15", @id = "detail_remitid_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.detail_remitid_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterId, new { @class = "form-control col-md-15 count-field", @id = "remitterId1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterId, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">
+                        Remitter Mobile Number
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitMobPhoneNum_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_length, new { @class = "form-control col-md-15", @id = "d_remitMobPhoneNum_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitMobPhoneNum_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterMobileNumber, new { @class = "form-control col-md-15 count-field", @id = "remitterMobileNumber1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterMobileNumber, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">   Remitter Customer Type</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitCusType_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitCusType_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitCusType_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitCusType_length, new { @class = "form-control col-md-15", @id = "d_remitCusType_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitCusType_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterCustomerType, new { @class = "form-control col-md-15 count-field", @id = "remitterCustomerType1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterCustomerType, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Birth Date</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitBDate_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitBDate_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitBDate_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitBDate_length, new { @class = "form-control col-md-15", @id = "d_remitBDate_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitBDate_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterBirthDate, new { @class = "form-control col-md-15 count-field", @id = "remitterBirthDate1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterBirthDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Address 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitAdd1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd1_length, new { @class = "form-control col-md-15", @id = "d_remitAdd1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterAddress1, new { @class = "form-control col-md-15", @id = "remitterAddress11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterAddress1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  10" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Address 2</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd2_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitAdd2_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd2_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd2_length, new { @class = "form-control col-md-15", @id = "d_remitAdd2_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd2_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterAddress2, new { @class = "form-control col-md-15", @id = "remitterAddress21" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterAddress2, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  11" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Address 3</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd3_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitAdd3_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd3_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd3_length, new { @class = "form-control col-md-15", @id = "d_remitAdd3_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd3_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterAddress3, new { @class = "form-control col-md-15 count-field", @id = "remitterAddress31" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterAddress3, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  12" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Address 4</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd4_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitAdd4_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd4_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitAdd4_length, new { @class = "form-control col-md-15", @id = "d_remitAdd4_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitAdd4_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterAddress4, new { @class = "form-control col-md-15 count-field", @id = "remitterAddress41" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterAddress4, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  8" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Nationality</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitNationality_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitNationality_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitNationality_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitNationality_length, new { @class = "form-control col-md-15", @id = "d_remitNationality_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitNationality_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterNationality, new { @class = "form-control col-md-15 count-field", @id = "remitterNationality1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterNationality, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- START NEW ADDED -->
+                <tr class="defaultDataValue  8" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Country</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemCountryStartColumn, new { @class = "form-control col-md-15 count-field", @id = "RemCountryStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemCountryStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemCountryLength, new { @class = "form-control col-md-15", @id = "RemCountryLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemCountryLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemCountryDefault, new { @class = "form-control col-md-15 count-field", @id = "RemCountryDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemCountryDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <!-- END NEW ADDED -->
+
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Id Type 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDType1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitIDType1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDType1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDType1_length, new { @class = "form-control col-md-15", @id = "d_remitIDType1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDType1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterIdType1, new { @class = "form-control col-md-15 count-field", @id = "remitterIdType11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterIdType1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Id Number 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDNum1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitIDNum1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDNum1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDNum1_length, new { @class = "form-control col-md-15", @id = "d_remitIDNum1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDNum1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterIdNumber1, new { @class = "form-control col-md-15 count-field", @id = "remitterIdNumber11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterIdNumber1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Id Issued At 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitIDIssueAt1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_length, new { @class = "form-control col-md-15", @id = "d_remitIDIssueAt1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDIssueAt1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterIdIssuedAt1, new { @class = "form-control col-md-15 count-field", @id = "remitterIdIssuedAt11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterIdIssuedAt1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Id Expiry 1
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_remitIDExpDate1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_length, new { @class = "form-control col-md-15", @id = "d_remitIDExpDate1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_remitIDExpDate1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.remitterIdExpiry1, new { @class = "form-control col-md-15 count-field", @id = "remitterIdExpiry11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.remitterIdExpiry1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- START NEW ADDED -->
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Fourth Name
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemFourthNmeStartColumn, new { @class = "form-control col-md-15 count-field", @id = "RemFourthNmeStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemFourthNmeStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemFourthNmeLength, new { @class = "form-control col-md-15", @id = "RemFourthNmeLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemFourthNmeLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemFourthNmeDefault, new { @class = "form-control col-md-15 count-field", @id = "RemFourthNmeDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemFourthNmeDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Place of Birth
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemPlaceBrthStartColumn, new { @class = "form-control col-md-15 count-field", @id = "RemPlaceBrthStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemPlaceBrthStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemPlaceBrthLength, new { @class = "form-control col-md-15", @id = "RemPlaceBrthLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemPlaceBrthLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemPlaceBrthDefault, new { @class = "form-control col-md-15 count-field", @id = "RemPlaceBrthDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemPlaceBrthDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter Account Number</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemAcctNumStartColumn, new { @class = "form-control col-md-15 count-field", @id = "RemAcctNumStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemAcctNumStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemAcctNumLength, new { @class = "form-control col-md-15", @id = "RemAcctNumLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemAcctNumLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemAcctNumDefault, new { @class = "form-control col-md-15", @id = "RemAcctNumDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemAcctNumDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Remitter IBAN</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemIBANStartColumn, new { @class = "form-control col-md-15 count-field", @id = "RemIBANStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemIBANStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemIBANLength, new { @class = "form-control col-md-15", @id = "RemIBANLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemIBANLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.RemIBANDefault, new { @class = "form-control col-md-15", @id = "RemIBANDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.RemIBANDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <!-- END NEW ADDED -->
+
+
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary First Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryFName_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryFName_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryFName_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryFirstName, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryFirstName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryFirstName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Middle Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryMName_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryMName_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryMName_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryMiddleName, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryMiddleName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryMiddleName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Last Name</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryLName_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryLName_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryLName_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryLastName, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryLastName1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryLastName, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">
+                        Beneficiary Mobile Number
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryMobPhoneNo_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryMobPhoneNo_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryMobPhoneNo_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryMobileNumber, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryMobileNumber1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryMobileNumber, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Customer <br />Type</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryCusType_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryCusType_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryCusType_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryCustomerType, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryCustomerType1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryCustomerType, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Birth <br />Date</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryBDate_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryBDate_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryBDate_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryBirthDate, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryBirthDate1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryBirthDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Address 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryAdd1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryAdd1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryAddress1, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryAddress11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryAddress1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  39" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Address 2</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryAdd2_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryAdd2_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd2_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryAddress2, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryAddress21" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryAddress2, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  40" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Address 3</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryAdd3_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryAdd3_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryAdd3_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryAddress3, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryAddress31" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryAddress3, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Nationality</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryNationality_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryNationality_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryNationality_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryNationality, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryNationality1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryNationality, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">
+                        Beneficiary Relation to Remitter
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryRel_tothe_remit_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryRel_tothe_remit_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryRel_tothe_remit_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryRelationToRemitter, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryRelationToRemitter1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryRelationToRemitter, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  41" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Country</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryCountry_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryCountry_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryCountry_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryCountry, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryCountry1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryCountry, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  42" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Zip Code</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_zipCode_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_zipCode_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_zipCode_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_zipCode_length, new { @class = "form-control col-md-15", @id = "d_zipCode_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_zipCode_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryZipCode, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryZipCode1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryZipCode, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  54" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Beneficiary Email</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_beneficiaryEmailAdd_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_length, new { @class = "form-control col-md-15", @id = "d_beneficiaryEmailAdd_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_beneficiaryEmailAdd_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.beneficiaryEmail, new { @class = "form-control col-md-15 count-field", @id = "beneficiaryEmail1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.beneficiaryEmail, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Payment Field 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField1_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_billsPayField1_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField1_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField1_length, new { @class = "form-control col-md-15", @id = "d_billsPayField1_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField1_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.paymentField1, new { @class = "form-control col-md-15 count-field", @id = "paymentField11" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.paymentField1, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Payment Field 2</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField2_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_billsPayField2_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField2_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField2_length, new { @class = "form-control col-md-15", @id = "d_billsPayField2_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField2_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.paymentField2, new { @class = "form-control col-md-15 count-field", @id = "paymentField21" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.paymentField2, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Payment Field 3</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField3_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_billsPayField3_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField3_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField3_length, new { @class = "form-control col-md-15", @id = "d_billsPayField3_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField3_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.paymentField3, new { @class = "form-control col-md-15 count-field", @id = "paymentField31" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.paymentField3, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  73" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Payment Field 4</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField4_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_billsPayField4_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField4_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField4_length, new { @class = "form-control col-md-15", @id = "d_billsPayField4_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField4_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.paymentField4, new { @class = "form-control col-md-15 count-field", @id = "paymentField41" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.paymentField4, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  74" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Payment Field 5</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField5_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_billsPayField5_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField5_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_billsPayField5_length, new { @class = "form-control col-md-15", @id = "d_billsPayField5_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_billsPayField5_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.paymentField5, new { @class = "form-control col-md-15 count-field", @id = "paymentField51" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.paymentField5, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Outlet Branch Code</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_outletBranchCode_start_column, new { @class = "form-control col-md-15 count-field", @id = "d_outletBranchCode_start_column" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_outletBranchCode_start_column, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.d_outletBranchCode_length, new { @class = "form-control col-md-15", @id = "d_outletBranchCode_length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.d_outletBranchCode_length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.outletBranchCode, new { @class = "form-control col-md-15 count-field", @id = "outletBranchCode1" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.outletBranchCode, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- START NEW ADDED -->
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 1</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res1StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res1StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res1StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res1Length, new { @class = "form-control col-md-15", @id = "Res1Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res1Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res1Default, new { @class = "form-control col-md-15 count-field", @id = "Res1Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res1Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 2</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res2StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res2StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res2StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res2Length, new { @class = "form-control col-md-15", @id = "Res2Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res2Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res2Default, new { @class = "form-control col-md-15 count-field", @id = "Res2Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res2Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 3</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res3StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res3StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res3StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res3Length, new { @class = "form-control col-md-15", @id = "Res3Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res3Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res3Default, new { @class = "form-control col-md-15 count-field", @id = "Res3Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res3Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 4</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res4StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res4StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res4StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res4Length, new { @class = "form-control col-md-15", @id = "Res4Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res4Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res4Default, new { @class = "form-control col-md-15 count-field", @id = "Res4Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res4Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 5</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res5StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res5StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res5StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res5Length, new { @class = "form-control col-md-15", @id = "Res5Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res5Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res5Default, new { @class = "form-control col-md-15 count-field", @id = "Res5Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res5Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 6</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res6StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res6tartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res6StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res6Length, new { @class = "form-control col-md-15", @id = "Res6Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res6Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res6Default, new { @class = "form-control col-md-15 count-field", @id = "Res6Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res6Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 7</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res7StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res7StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res7StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res7Length, new { @class = "form-control col-md-15", @id = "Res7Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res7Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res7Default, new { @class = "form-control col-md-15 count-field", @id = "Res7Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res7Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 8</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res8StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res8StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res8StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res8Length, new { @class = "form-control col-md-15", @id = "Res8Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res8Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res8Default, new { @class = "form-control col-md-15 count-field", @id = "Res8Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res8Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 9</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res9StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res9StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res9StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res9Length, new { @class = "form-control col-md-15", @id = "Res9Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res9Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res9Default, new { @class = "form-control col-md-15 count-field", @id = "Res9Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res9Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Reserve 10</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res10StartColumn, new { @class = "form-control col-md-15 count-field", @id = "Res10StartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res10StartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res10Length, new { @class = "form-control col-md-15", @id = "Res10Length" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res10Length, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.Res10Default, new { @class = "form-control col-md-15 count-field", @id = "Res10Default" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.Res10Default, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Source Of Remitter</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.SourceOfRemStartColumn, new { @class = "form-control col-md-15 count-field", @id = "SourceOfRemStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.SourceOfRemStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.SourceOfRemLength, new { @class = "form-control col-md-15", @id = "SourceOfRemLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.SourceOfRemLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.SourceOfRemDefault, new { @class = "form-control col-md-15 count-field", @id = "SourceOfRemDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.SourceOfRemDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Nature Of Business</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.NatrueOfBussStartColumn, new { @class = "form-control col-md-15 count-field", @id = "NatrueOfBussStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.NatrueOfBussStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.NatrueOfBussLength, new { @class = "form-control col-md-15", @id = "NatrueOfBussLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.NatrueOfBussLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.NatrueOfBussDefault, new { @class = "form-control col-md-15 count-field", @id = "NatrueOfBussDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.NatrueOfBussDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="defaultDataValue  76" id="rowID_1">
+                    <td calss="tdCalss" scope="row">Purpose Of Remittance</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.PurposeOfRemStartColumn, new { @class = "form-control col-md-15 count-field", @id = "PurposeOfRemStartColumn" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.PurposeOfRemStartColumn, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="length-column">
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.PurposeOfRemLength, new { @class = "form-control col-md-15", @id = "PurposeOfRemLength" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.PurposeOfRemLength, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TieupViewDetailInputs.PurposeOfRemDefault, new { @class = "form-control col-md-15 count-field", @id = "PurposeOfRemDefault" })
+                        @Html.ValidationMessageFor(m => m.TieupViewDetailInputs.PurposeOfRemDefault, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="justify-content-center align-items-center" style="height: 100%;">
+                            <input type="checkbox" class="provided_notReq" id="view">
+                        </div>
+                    </td>
+                </tr>
+                <!-- END NEW ADDED -->
+
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+@* For Footer Table Content *@
+<br />
+
+<!-- REMARKS -->
+<div class="card" id="remarksDiv">
+    <div class="card-body">
+        <div class="form-group">
+            <div class="card">
+                <label>@Html.LabelFor(m => m.TieupViewMaintInputs.remarks)<span style="color:red;">*</span></label>
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.TextAreaFor(m => m.TieupViewMaintInputs.remarks, new { @class = "form-control excluded-class", @placeholder = "Enter Remarks", @id = "remarks" })
+                        @Html.ValidationMessageFor(m => m.TieupViewMaintInputs.remarks, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END -->

@@ -1,0 +1,35 @@
+﻿@using DARS.Web.Business
+@using VREMIT.Auth
+
+@{
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+    var hasAdd = AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_CREATE);
+    var hasEdit = AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_MODIFY);
+    var hasAddOrEdit = hasAdd || hasEdit;
+}
+
+
+@if (hasAddOrEdit)
+{
+    <div class="col-md-12">
+        <div class="card border-black">
+            <div class="card-body text-dark">
+                <ul>
+                    @if (hasAdd)
+                    {
+                        <li>
+                            To create new record, click on <code>Add New</code> button.
+                        </li>
+                    }
+                    @if (hasEdit)
+                    {
+                        <li>
+                            To amend, click on <code>Edit</code> button.
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+

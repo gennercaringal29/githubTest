@@ -1,0 +1,482 @@
+﻿@model DARS.Web.Models.FormatMapperFormViewModel
+@using DARS.Web.Business
+@using VREMIT.Auth
+
+@{
+    ViewBag.Title = "Format Mapper Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? status = ViewBag.Status as int?;
+    string success = ViewBag.SuccessMessage as string;
+    string error = ViewBag.ErrorMessage as string;
+
+    var currentUser = SessionHelper<CurrentUser>.Get("CurrentUser");
+}
+
+@if (status != null)
+{
+    <div class="row" id="error_div">
+        <div class="col-md-12">
+            @{Html.RenderPartial("_PartialGenericStatus", new DARS.Web.Models.GenericStatusViewModel
+                {
+                    Status = status,
+                    SuccessMessage = success,
+                    ErrorMessage = error
+                });}
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-content">
+
+        @using (Html.BeginForm("MaintFormatMapperPendingDetail", "FormatMapperMaint", FormMethod.Post, new { @class = "form form-horizontal", @id = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="card-body">
+
+                @Html.HiddenFor(m => m.Action)
+                @Html.HiddenFor(m => m.tieup_code_id)
+
+                <h4 class="form-section"><i class="la la-ellipsis-v"></i> Pending Approval Detail</h4>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.TranID, new { @class = "col-md-4 label-control" })
+                            <div class="col-md-8">
+                                <label class="form-control-static">@Model.tieup_code_id</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.RequestType, new { @class = "col-md-4 label-control" })
+                            <div class="col-md-8">
+                                <label class="form-control-static" id="requestTypeValue">@Html.PendingRequestStatus(Model.RequestType)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.RequestBy, new { @class = "col-md-4 label-control" })
+                            <div class="col-md-8">
+                                <label class="form-control-static">@Model.RequestBy</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.RequestDateTime, new { @class = "col-md-4 label-control" })
+                            <div class="col-md-8">
+                                <label class="form-control-static">@Model.RequestDateTime</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="form-section"></h4>
+
+                <div class="menu-content detail">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.tieup_codes, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.tieup_codes</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.file_type, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.file_type</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    @if (@Model.file_type.Trim() == "txt" || @Model.file_type.Trim() == "others")
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.delimiter_type, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.delimiter_type</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (Model.delimiter_type == "Delimiter")
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        @Html.LabelFor(m => m.delimiter, new { @class = "col-md-4 label-control" })
+                                        @if (@Model.delimiter_val == null || @Model.delimiter_val == "")
+                                        {
+                                            <div class="col-md-8">
+                                                <label class="form-control-static">@Model.delimiter</label>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-8">
+                                                <label class="form-control-static">@Model.delimiter - @Model.delimiter_val</label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        @Html.LabelFor(m => m.start_record, new { @class = "col-md-4 label-control" })
+                                        <div class="col-md-8">
+                                            <label class="form-control-static">@Model.start_record</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+
+                    @if (Model.isFilenameValidation == "On" || Model.isFilenameValidation == "Off" || Model.isFooterValidation == "On" || Model.isFooterValidation == "Off")
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.isFilenameValidation, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.isFilenameValidation</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.isFooterValidation, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.isFooterValidation</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                <div class="row">
+                    @*<div class="col-md-6">
+            <div class="form-group row">
+                @Html.LabelFor(m => m.settlement_currency, new { @class = "col-md-4 label-control" })
+                <div class="col-md-8">
+                    <label class="form-control-static">@Model.TieupViewDetailInputs.settlementCurrency</label>
+                </div>
+            </div>
+        </div>*@
+                    @if (Model.delimiter_type == "Delimiter")
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.start_record, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.start_record</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.RequestType != 1 && Model.delimiter_type == "Fixed Length")
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-md-4 label-control">Maker Remarks:</label>
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.RequestStatusReason</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(m => m.d_prefix, new { @class = "col-md-4 label-control" })
+                                <div class="col-md-8">
+                                    <label class="form-control-static">@Model.d_prefix</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                    
+                    <div class="row">
+                        @if (AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_APPROVE))
+                        {
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.remarks, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        @Html.TextAreaFor(m => m.TieupViewMaintInputs.remarks, new { @class = "col-md-12 form-control", @placeholder = "Remarks", @id = "remarks" })
+                                        @Html.ValidationMessageFor(m => m.TieupViewMaintInputs.remarks, null, new { @class = "text-danger", @id = "req_status_reason" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.delimiter_type == "Fixed Length" && Model.RequestType == 1)
+                        {
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(m => m.d_prefix, new { @class = "col-md-4 label-control" })
+                                    <div class="col-md-8">
+                                        <label class="form-control-static">@Model.d_prefix</label>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+
+                    <br />
+                    <br />
+
+                    <div class="table-responsive menu-subContent detail1">
+                        @{
+                            var naRows = Model.FieldPropertiesDetail
+                            .Where(item => item.ColumnDefaultData != "" || item.ColumnStart != "")
+                            .ToList();
+                            //var nonNaRows = Model.FieldPropertiesDetail
+                            //.Where(item => item.ColumnDefaultData != "" && item.ColumnStart != "")
+                            //.ToList();
+                            //var nonNaRows = Model.FieldPropertiesDetail.Where(item => item.ColumnDefaultData == "").ToList();
+                        }
+
+                        <table class="table table-striped table-bordered compact myTable" style="width:100%" id="myTableDetail2">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="background-color:red;color:white">Standard File Fields</th>
+                                    <th scope="col" style="background-color:red; color:white">Start Column</th>
+                                    @if (Model.delimiter_type == "Fixed Length")
+                                    {
+                                        <th scope="col" style="background-color:red; color:white">Length</th>
+                                    }
+                                    <th scope="col" style="background-color:red; color:white">Default Value</th>
+                                    <th scope="col" style="background-color:red; color:white">Not Provided?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in naRows)
+                                {
+                                    <tr>
+                                        <td>@item.FieldName</td>
+                                        <td>@item.ColumnStart</td>
+                                        @if (Model.delimiter_type == "Fixed Length")
+                                        {
+                                            <td>@item.ColumnLength</td>
+                                        }
+                                        <td>@item.ColumnDefaultData</td>
+                                        <td>@item.CheckBox</td>
+                                    </tr>
+                                }
+                                @*@foreach (var item in Model.FieldPropertiesDetail)
+                    {
+                        <tr>
+                            <td>@item.FieldName</td>
+                            <td>@item.ColumnStart</td>
+                            @if (Model.delimiter_type == "Fixed Length")
+                            {
+                                <td>@item.ColumnLength</td>
+                            }
+                            <td>@item.ColumnDefaultData</td>
+                            <td>@item.CheckBox</td>
+                        </tr>
+                    }*@
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            if (Model.RequestType == 2)
+            {
+                <div class="card-body">
+
+                    <h4 class="form-section"><i class="la la-ellipsis-v"></i> Amendment Request</h4>
+
+                    @Html.Partial("_PartialAmendRequest", Model.amendmentDatatable)
+
+                </div>
+            }
+
+            <div class="form-actions center">
+                <input type="button" id="btnBack" value="Back" class="btn btn-primary" />
+                @if (AccessRightsHelper.HasRights(currentUser.AccessRights, ModelViewer.TIEUP_FILE_MAPPER, ModelViewer.ACTION_APPROVE))
+                {
+                    <input type="submit" id="approve" class="btn btn-primary" value="Approve" onclick="validateAndSubmit('Approve', '@Model.TieupViewMaintInputs.tieup_code_id', '@Model.TieupViewMaintInputs.status')" />
+                    <input type="submit" id="reject" class="btn btn-primary" value="Reject" onclick="validateAndSubmit('Reject', '@Model.TieupViewMaintInputs.tieup_code_id', '@Model.TieupViewMaintInputs.status')" />
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var viewpending_ = '@Url.Action("FormatMapperMaintPending", "FormatMapperMaint")';
+        var approve_ = '@Url.Action("MaintUpdateFormatMapper", "FormatMapperMaint")';
+        var reject_ = '@Url.Action("Reject", "FormatMapperMaint")';
+        var detail_div = !!document.getElementById("detail_div");
+
+        $(document).ready(function () {
+
+            if (detail_div) {
+                document.getElementById('detail_div').scrollIntoView();
+            }
+
+            if ("@ViewBag.stext" != "") {
+                swal({
+                    title: "@ViewBag.stitle",
+                    text: "@ViewBag.stext",
+                    icon: "@ViewBag.sicon"
+                })
+            }
+
+            $('#btnBack').click(function () {
+                window.location = viewpending_;
+            });
+
+
+        });
+
+        function validateAndSubmit(req, id, status, reqtype) {
+            if (req === "Approve") {
+                $("#remarksValidation").text(" ");  // Remove the validation message
+                $("#remarks").removeAttr("data-val-required");
+                $("#remarks").rules("remove", "required");
+                $("#remarks").valid();
+                var flag = ""
+                if (status == 0) {
+                    var title = "Approve";
+                    var text = "Are you sure you want to approve the creation request?"; //Approve New Create
+                    var icon = "warning";
+                    flag = "1";
+                }
+                if (@ViewBag.reqtype === 3) {
+                    var title = "Approve";
+                    var text = " Are you sure you want to approve the deletion request?"; //Approve Deletion
+                    var icon = "warning";
+                    flag = "3";
+                } else if (@ViewBag.reqtype === 2) {
+                    var title = "Approve";
+                    var text = "Are you sure you want to approve the amendment request?"; //Approve Edit
+                    var icon = "warning";
+                    flag = "2";
+                }
+
+            } else if (req === "Reject") {
+                var remarksValue = $("#remarks").val();
+                var flagReject = "";
+                if (remarksValue.trim() === "") {
+                    $("#remarks").rules("add", "required");
+                    $("#remarksValidation").text("Remarks is required.");  // Show the validation message
+
+                } else {
+                    if (status == 0) {
+                        var title = "Reject";
+                        var text = "Are you sure you want to reject the new request?"; //Reject New Create
+                        var icon = "warning";
+                        var flagReject = "1";
+                    }
+                    if (@ViewBag.reqtype === 3) {
+                        var title = "Reject";
+                        var text = "Are you sure you want to reject the deletion request?"; //Reject Deletion
+                        var icon = "warning";
+                        var flagReject = "3";
+                    } else if (@ViewBag.reqtype === 2) {
+                        var title = "Reject";
+                        var text = "Are you sure you want to reject the amendment request?"; //Reject Edit
+                        var icon = "warning";
+                        var flagReject = "2";
+                    }
+                }
+            }
+
+            if ($("#form1").valid()) { //change
+
+                $("form").submit(function (e) {
+                    e.preventDefault();
+                });
+
+                swal({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willCrud) => {
+                    if (willCrud) {
+                        var form = $("#form1").serialize() + '&req=' + req + '&id=' + id + '&status=' + status + '&reqtype=' + reqtype; //change
+                        $.ajax({
+                            type: 'POST',
+                            url: approve_, // change
+                            data: form,
+                            dataType: 'json',
+                            success: function (data) {
+                                let title, text;
+
+                                if (flag == "1") {
+                                    title = "Approved!";
+                                    text = "New request has been successfully approved";
+                                } else if (flag == "2") {
+                                    title = "Amendment";
+                                    text = "Amendment request has been successfully submitted for approval";
+                                } else if (flag == "3") {
+                                    title = "Approved!";
+                                    text = "Deletion request has been successfully approved";
+                                } else if (flagReject == "2" || flagReject == "1" || flagReject == "3") {
+                                    title = "Rejected!";
+                                    switch (flagReject) {
+                                        case "2":
+                                            text = "Amendment request has been rejected";
+                                            break;
+                                        case "1":
+                                            text = "New request has been rejected";
+                                            break;
+                                        case "3":
+                                            text = "Deletion request has been rejected";
+                                            break;
+                                        default:
+                                            text = "";
+                                    }
+                                } else {
+                                    alert(data);
+                                    return;
+                                }
+
+                                swal({
+                                    title: title,
+                                    text: text,
+                                    icon: "success"
+                                }).then(() => {
+                                    window.location.href = viewpending_;
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    </script>
+}
+
